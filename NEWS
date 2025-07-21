@@ -1,0 +1,12 @@
+(channel-news
+  (version 0)
+  ;; (entry (tag "the-bug-fix")
+  ;;        (title (en "Fixed terrible bug")
+  ;;               (fr "Oh la la"))
+  ;;        (body (en "@emph{Good news}!  It's fixed!")
+  ;;              (eo "Certe ĝi pli bone funkcias nun!")))
+  (entry (commit "f9a17bff6762fce86c21e21ad2d096f9e802fc15")
+         (title (en "Write A New")
+		(zh "写了个新闻"))
+         (body (en "I have Wrote A new")
+	       (zh "我写了个新闻"))))
