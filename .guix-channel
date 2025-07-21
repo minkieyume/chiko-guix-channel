@@ -2,5 +2,5 @@
  (version 0)
  (directory "modules")
  (keyring-reference "keyring")
- (url "https://codeberg.org/hako/rosenthal.git")
+ (url "https://github.com/minkieyume/guix-channel")
  (news-file "NEWS"))
