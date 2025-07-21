@@ -1,0 +1,6 @@
+(channel
+ (version 0)
+ (directory "modules")
+ (keyring-reference "keyring")
+ (url "https://codeberg.org/hako/rosenthal.git")
+ (news-file "NEWS"))
