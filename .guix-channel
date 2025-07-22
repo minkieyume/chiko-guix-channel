@@ -1,6 +1,6 @@
 (channel
  (version 0)
- (directory "modules")
+ (directory "chiko")
  (keyring-reference "keyring")
  (url "https://github.com/minkieyume/guix-channel")
  (news-file "NEWS"))
