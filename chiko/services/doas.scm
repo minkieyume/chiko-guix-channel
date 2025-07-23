@@ -42,4 +42,4 @@
         ;; 确保 doas 包被安装到系统 profile
         (service-extension profile-service-type (const (list opendoas))))
     (default-value (doas-configuration))
-    (description "Doas的服务器，可以自定义doas规则")))
+    (description "Doas的服务器，可以自定义doas规则"))))
