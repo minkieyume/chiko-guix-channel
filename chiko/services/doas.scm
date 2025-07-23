@@ -33,15 +33,6 @@
       (if (string-null? as-target) "" (string-append "as " as-target)) " "
       (if (string-null? command) "" (string-append "cmd " command)))))
 
-(define doas-ruleset-etc
-  (match-record-lambda <doas-configuration>
-    (rules)
-    (if (null? rules) '()
-       `(("doas.conf"
-        ,(plain-file
-           "doas.conf"
-           (string-join (map doas-rule-etc rules) "\n")))))))
-
 (define-configuration doas-configuration
   (config-file
     (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
@@ -50,6 +41,15 @@
     (list-of-doas-rules '())
     "doas-rule的规则列表")
   (no-serialization))
+
+(define doas-ruleset-etc
+  (match-record-lambda <doas-configuration>
+    (rules)
+    (if (null? rules) '()
+       `(("doas.conf"
+        ,(plain-file
+           "doas.conf"
+           (string-join (map doas-rule-etc rules) "\n")))))))
 
 (define doas-service-type
   (service-type
