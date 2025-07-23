@@ -10,7 +10,7 @@
   #:use-module (srfi srfi-13)
   #:export (doas-service-type
              doas-configuration))
-;; 未实现
+
 (define-record-type* <doas-rule>
   doas-rule make-doas-rule doas-rule?
   this-doas
@@ -36,10 +36,11 @@
 (define doas-ruleset-etc
   (match-record-lambda <doas-configuration>
     (rules)
-    `(("doas.conf"
-      ,(plain-file
-        "doas.conf"
-        (string-join (map doas-rule-etc rules) "\n"))))))
+    (if (null? rules) '()
+       `(("doas.conf"
+        ,(plain-file
+           "doas.conf"
+           (string-join (map doas-rule-etc rules) "\n")))))))
 
 (define-configuration doas-configuration
   (config-file
