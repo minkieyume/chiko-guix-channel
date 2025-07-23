@@ -43,4 +43,5 @@
         (service-extension etc-service-type
           (lambda (config)
             `(("doas.conf" ,(doas-configuration-rules config)))))))
-    (default-value (doas-configuration))))
+    (default-value (doas-configuration))
+    (description "Doas的服务器，可以自定义doas规则")))
