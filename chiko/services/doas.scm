@@ -22,7 +22,7 @@
 
 (define-configuration doas-configuration
   (config-file
-    (file-like "/etc/doas.conf")
+    (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
     "Path to doas configuration file.")
   (rules
     (list-of-doas-rules '())
