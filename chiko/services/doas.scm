@@ -22,7 +22,7 @@
 
 (define-configuration doas-configuration
   (config-file
-    (file-object "/etc/doas.conf")
+    (file-like "/etc/doas.conf")
     "Path to doas configuration file.")
   (rules
     (list-of-doas-rules '())
