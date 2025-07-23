@@ -2,6 +2,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (gnu services)
+  #:use-module (guix records)
   #:use-module (gnu services configuration)  
   #:use-module (gnu packages admin)
   #:use-module (gnu system shadow)
