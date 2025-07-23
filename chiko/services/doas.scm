@@ -2,8 +2,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (gnu services)
-  #:use-module (gnu services configuration)
-  #:use-module (gnu services etc)
+  #:use-module (gnu services configuration)  
   #:use-module (gnu packages admin)
   #:use-module (gnu system shadow)
   #:export (doas-service-type
