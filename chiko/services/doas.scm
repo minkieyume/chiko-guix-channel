@@ -34,11 +34,14 @@
       (if (string-null? command) "" (string-append "cmd " command)))))
 
 (define-configuration doas-configuration
-  (config-file
-    (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
-    "Path to doas configuration file.")
+  ;; (config-file
+  ;;   (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
+  ;;   "Path to doas configuration file.")
   (rules
-    (list-of-doas-rules '())
+    (list-of-doas-rules '((doas-rule
+                            (permit #t)
+                            (user ":wheel")
+                            (options (list "persist" "keepenv")))))
     "doas-rule的规则列表")
   (no-serialization))
 
@@ -57,9 +60,9 @@
     (extensions
       (list
         ;; 把 doas.conf 安装到 /etc
-        (service-extension etc-service-type
-          (lambda (config)
-            `(("doas.conf" ,(doas-configuration-config-file config)))))
+        ;; (service-extension etc-service-type
+        ;;   (lambda (config)
+        ;;     `(("doas.conf" ,(doas-configuration-config-file config)))))
         ;; 确保 doas 包被安装到系统 profile
         (service-extension profile-service-type (const (list opendoas)))
         (service-extension etc-service-type
