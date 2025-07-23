@@ -7,6 +7,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu system shadow)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-13)
   #:export (doas-service-type
              doas-configuration))
 ;; 未实现
@@ -14,12 +15,31 @@
   doas-rule make-doas-rule doas-rule?
   this-doas
   (permit doas-rule-permit (default #t))           ;允许或拒绝
-  (users doas-rule-users (default '()))   ; 默认空列表
-  (args doas-rule-args (default '()))     ; 默认空列表
+  (user doas-rule-user (default ""))
+  (as-target doas-rule-as-target (default ""))
+  (command doas-rule-command (default ""))
   (options doas-rule-options (default '()))) ; 默认空列表
 
 (define (list-of-doas-rules? lst)
   (every doas-rule? lst))
+
+(define doas-rule-etc
+  (match-record-lambda <doas-rule>
+    (permit user as-target command options)
+    (string-append
+      (if permit "permit" "deny") " "
+      (if (null? options) "" (string-join options " ")) " "
+      user " "
+      (if (string-null? as-target) "" (string-append "as " as-target)) " "
+      (if (string-null? command) "" (string-append "cmd " command)))))
+
+(define doas-ruleset-etc
+  (match-record-lambda <doas-configuration>
+    (rules)
+    `(("doas.conf"
+      ,(plain-file
+        "doas.conf"
+        (string-join (map doas-rule-etc rules) "\n"))))))
 
 (define-configuration doas-configuration
   (config-file
@@ -40,6 +60,8 @@
           (lambda (config)
             `(("doas.conf" ,(doas-configuration-config-file config)))))
         ;; 确保 doas 包被安装到系统 profile
-        (service-extension profile-service-type (const (list opendoas))))
+        (service-extension profile-service-type (const (list opendoas)))
+        (service-extension etc-service-type
+          doas-ruleset-etc)))
     (default-value (doas-configuration))
-    (description "Doas的服务器，可以自定义doas规则"))))
+    (description "Doas的服务器，可以自定义doas规则")))
