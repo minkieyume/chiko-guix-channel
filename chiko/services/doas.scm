@@ -38,10 +38,10 @@
   ;;   (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
   ;;   "Path to doas configuration file.")
   (rules
-    (list (doas-rule
-            (permit #t)
-            (user ":wheel")
-            (options (list "persist" "keepenv"))))
+    (list (make-doas-rule
+            #:permit #t
+            #:user ":wheel"
+            #:options '("persist" "keepenv")))
     "doas-rule的规则列表")
   (no-serialization))
 
