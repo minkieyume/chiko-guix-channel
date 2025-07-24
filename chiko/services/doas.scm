@@ -18,7 +18,7 @@
   (user doas-rule-user (default "") (keyword #:user))
   (as-target doas-rule-as-target (default "") (keyword #:as-target))
   (command doas-rule-command (default "") (keyword #:command))
-  (options doas-rule-options (default '())) (keyword #:options)) ; 默认空列表
+  (options doas-rule-options (default '()) (keyword #:options))) ; 默认空列表
 
 (define (list-of-doas-rules? lst)
   (every doas-rule? lst))
