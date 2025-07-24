@@ -27,11 +27,11 @@
   (match-record-lambda <doas-rule>
     (permit user as-target command options)
     (string-append
-      (if permit "permit" "deny") " "
-      (if (null? options) "" (string-join options " ")) " "
-      user " "
-      (if (string-null? as-target) "" (string-append "as " as-target)) " "
-      (if (string-null? command) "" (string-append "cmd " command)))))
+      (if permit "permit" "deny")
+      (if (null? options) "" (string-join " " options " "))
+      (if (string-null? user) "" (string-append " " user))
+      (if (string-null? as-target) "" (string-append " as " as-target))
+      (if (string-null? command) "" (string-append " cmd " command)))))
 
 (define-configuration doas-configuration
   ;; (config-file
