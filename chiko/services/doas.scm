@@ -38,7 +38,7 @@
   ;;   (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
   ;;   "Path to doas configuration file.")
   (rules
-    (list (make-doas-rule
+    (list (doas-rule
             #:permit #t
             #:user ":wheel"
             #:options '("persist" "keepenv")))
