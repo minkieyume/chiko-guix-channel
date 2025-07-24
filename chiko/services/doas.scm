@@ -39,9 +39,9 @@
   ;;   "Path to doas configuration file.")
   (rules
     (list (doas-rule
-            #:permit #t
-            #:user ":wheel"
-            #:options '("persist" "keepenv")))
+            (permit #t)
+            (user ":wheel")
+            (options '("persist" "keepenv"))))
     "doas-rule的规则列表")
   (no-serialization))
 
