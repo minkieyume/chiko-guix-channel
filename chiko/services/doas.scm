@@ -45,6 +45,9 @@
               (user ":wheel")
               (options '("persist" "keepenv")))))
     "doas-rule的规则列表")
+  (doas
+    (package opendoas)
+    "doas的包")
   (no-serialization))
 
 (define doas-ruleset-etc
@@ -66,7 +69,8 @@
         ;;   (lambda (config)
         ;;     `(("doas.conf" ,(doas-configuration-config-file config)))))
         ;; 确保 doas 包被安装到系统 profile
-        (service-extension profile-service-type (const (list opendoas)))
+        (service-extension profile-service-type
+          (lambda (cfg) (list doas-configuration-doas cfg)))
         (service-extension etc-service-type
           doas-ruleset-etc)))
     (default-value (doas-configuration))
