@@ -70,8 +70,12 @@
         ;;     `(("doas.conf" ,(doas-configuration-config-file config)))))
         ;; 确保 doas 包被安装到系统 profile
         (service-extension profile-service-type
-          (lambda (cfg) (list doas-configuration-doas cfg)))
+          (lambda (cfg) (list (doas-configuration-doas cfg))))
         (service-extension etc-service-type
-          doas-ruleset-etc)))
+          doas-ruleset-etc)
+        (service-extension setuid-program-service-type
+          (lambda (cfg) (list (setuid-program
+                                (program (file-append nfs-utils "/sbin/mount.nfs"))
+                                (setuid? #t)))))))
     (default-value (doas-configuration))
     (description "Doas的服务器，可以自定义doas规则")))
