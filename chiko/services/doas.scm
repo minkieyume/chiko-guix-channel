@@ -6,6 +6,7 @@
   #:use-module (gnu services configuration)  
   #:use-module (gnu packages admin)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system setuid)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
   #:export (doas-service-type
