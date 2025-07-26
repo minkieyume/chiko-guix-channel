@@ -9,7 +9,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
   #:export (doas-service-type
-             doas-configuration))
+             doas-configuration
+             doas-rule))
 
 (define-record-type* <doas-rule>
   doas-rule make-doas-rule doas-rule?
@@ -75,7 +76,7 @@
           doas-ruleset-etc)
         (service-extension setuid-program-service-type
           (lambda (cfg) (list (setuid-program
-                                (program (file-append nfs-utils "/sbin/mount.nfs"))
+                                (program (file-append opendoas "/bin/doas"))
                                 (setuid? #t)))))))
     (default-value (doas-configuration))
     (description "Doas的服务器，可以自定义doas规则")))
