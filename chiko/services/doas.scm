@@ -19,6 +19,7 @@
   (user doas-rule-user (default "") (keyword #:user))
   (as-target doas-rule-as-target (default "") (keyword #:as-target))
   (command doas-rule-command (default "") (keyword #:command))
+  (args (default '()))
   (options doas-rule-options (default '()) (keyword #:options))) ; 默认空列表
 
 (define (list-of-doas-rules? lst)
@@ -26,13 +27,14 @@
 
 (define doas-rule-etc
   (match-record-lambda <doas-rule>
-    (permit user as-target command options)
+    (permit user as-target command options args)
     (string-append
       (if permit "permit" "deny")
       (if (null? options) "" (string-append " " (string-join options " ")))
       (if (string-null? user) "" (string-append " " user))
       (if (string-null? as-target) "" (string-append " as " as-target))
       (if (string-null? command) "" (string-append " cmd " command))
+      (if (null? args) "" (string-append " args " (string-join args " ")))
       "\n")))
 
 (define-configuration doas-configuration
