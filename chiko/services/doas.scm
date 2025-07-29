@@ -77,8 +77,8 @@
           (lambda (cfg) (list (doas-configuration-doas cfg))))
         (service-extension etc-service-type
           doas-ruleset-etc)
-        (service-extension setuid-program-service-type
-          (lambda (cfg) (list (setuid-program
+        (service-extension privileged-program-service-type
+          (lambda (cfg) (list (privileged-program
                                 (program (file-append opendoas "/bin/doas"))
                                 (setuid? #t)))))))
     (default-value (doas-configuration))
