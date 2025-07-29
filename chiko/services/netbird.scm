@@ -141,7 +141,7 @@
       (list (service-extension account-service-type
               (const %netbird-accounts))
         (service-extension log-rotation-service-type
-          netbird-management-log-rotation)
+          (lambda (config . reset) (netbird-management-log-rotation config)))
         (service-extension activation-service-type
           netbird-management-activation)
         (service-extension oci-container-service-type
