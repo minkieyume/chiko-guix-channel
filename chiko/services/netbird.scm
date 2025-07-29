@@ -145,5 +145,6 @@
         (service-extension oci-container-service-type
           netbird-management-oci-containers)))
     (default-value (netbird-management-configuration
-                     (auth-server '())))
+                     (auth-server '())
+                     (config-file (plain-file "config.json" "wwww"))))
     (description "运行Netbird Management服务。")))
