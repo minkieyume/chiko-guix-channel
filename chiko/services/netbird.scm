@@ -1,4 +1,4 @@
-(define-module (chiko services doas)
+(define-module (chiko services netbird)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (gnu services)
@@ -38,9 +38,6 @@
   (auth-server
     alist
     "验证服务器，参数必须为键值对，会自动合并到enviroment")
-  (doamin
-    string
-    "部署Netbird需要的域名。")
   (config-file
     file-like
     "配置文件")
@@ -90,7 +87,7 @@
 (define netbird-management-oci-containers
   (match-record-lambda <netbird-management-configuration>
     (management-image signal-image dashbord-image
-      data-directory doamin log-path management? dashbord? signal?
+      data-directory log-path management? dashbord? signal?
       management-ports dashboard-ports signal-ports config-file auth-server)
     `(,@(if management?
           (list (oci-container-configuration
@@ -146,5 +143,6 @@
           netbird-management-activation)
         (service-extension oci-container-service-type
           netbird-management-oci-containers)))
-    (default-value (netbird-management-configuration))
+    (default-value (netbird-management-configuration
+                     (auth-server '())))
     (description "运行Netbird Management服务。")))
