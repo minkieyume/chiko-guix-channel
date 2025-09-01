@@ -25,7 +25,7 @@
                   (commit version)))
             (sha256
              (base32
-              "1x79j3xlvhrvigh38vqhfrzqvdnpzaivbxsjzfi0pnx00y8czs5q"))
+              "0d9c7i3x4vfl7k4vi29zyrz1d2cx7kfdnir8slqdjbapyacrl4s0"))
             (file-name (git-file-name "emacs-dirvish" version))))))
 
 ;; 测试用：
