@@ -2,4 +2,6 @@
  (version 0)               ; current file format version
  
  (("F655 AB8D 8F94 0E9F 569C  E97D 5DBC D441 1818 2F31"
-   (name "MinkieYume"))))
+   (name "minkiechiko"))
+  ("1D49 47B7 EC8F 8C3F 4B19  7077 9E91 3592 5221 70AD"
+   (name "minkiechiko"))))
