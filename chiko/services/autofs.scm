@@ -1,18 +1,17 @@
 (define-module (chiko services autofs)
-  #:use-module (guix gexp)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:use-module (guix packages)
-  #:use-module (gnu services)
-  #:use-module (gnu packages file-systems)
-  #:use-module (gnu packages linux)
+  #:use-module (guix gexp)
   #:use-module (guix records)
-  #:use-module (gnu services admin)
-  #:use-module (gnu packages admin)
+  #:use-module (guix packages)  
+  #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages linux)  
+  #:use-module (gnu services)
+  #:use-module (gnu services admin)  
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-13)
   #:use-module (gnu system shadow)
+  #:use-module (srfi srfi-13)
   #:export (autofs-configuration
             autofs-service-type))
 
@@ -27,7 +26,7 @@
    file-like
    "")
   (extra-files
-   (list '())
+   (list-of-file-likes '())
    "")
   (data-directory
    (string "/var/lib/sing-box")
