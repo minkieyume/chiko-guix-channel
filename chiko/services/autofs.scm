@@ -19,10 +19,10 @@
    (file-like autofs)
    "")
   (config-file
-   file-object
+   file-like
    "")
   (master-file
-   file-object
+   file-like
    "")
   (extra-files
    (list-of-file-likes '())
