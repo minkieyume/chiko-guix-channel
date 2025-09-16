@@ -1,4 +1,4 @@
-(define-module (chiko services autofs)
+(define-module (chiko services file-systems)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (guix packages)
