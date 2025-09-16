@@ -2,7 +2,7 @@
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (guix packages)
-  #:use-module (guix packages file-systems)
+  #:use-module (guix packages filesystems)
   #:use-module (gnu services)
   #:use-module (guix records)
   #:use-module (gnu services configuration)
