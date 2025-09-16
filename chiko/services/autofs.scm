@@ -85,6 +85,5 @@
            (service-extension shepherd-root-service-type
                               autofs-shepherd-service)
            (service-extension log-rotation-service-type
-                              (compose list autofs-configuration-log-file))           
-           (service-extension )))
+                              (compose list autofs-configuration-log-file))))
     (description "")))
