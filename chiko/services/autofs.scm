@@ -2,15 +2,16 @@
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (guix packages)
-  #:use-module (guix packages)
   #:use-module (gnu services)
   #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages linux)
   #:use-module (guix records)
   #:use-module (gnu services configuration)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu packages admin)
-  #:use-module (gnu system privilege)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
+  #:use-module (gnu system shadow)
   #:export (autofs-configuration
             autofs-service-type))
 
@@ -25,7 +26,7 @@
    file-like
    "")
   (extra-files
-   (list-of-file-likes '())
+   (list '())
    "")
   (data-directory
    (string "/var/lib/sing-box")
