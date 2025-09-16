@@ -26,7 +26,7 @@
    file-like
    "")
   (extra-files
-   (list-of-file-likes '())
+   (list '())
    "")
   (data-directory
    (string "/var/lib/sing-box")
@@ -57,7 +57,7 @@
       (config-file master-file extra-files)
     `(("autofs.conf" ,config-file)
       ("auto.master" ,master-file)
-      ,@extra-files)))
+      ,@(map (lambda (file) (list #~(basename #$file) ,file)) extra-files))))
 
 (define autofs-shepherd-service
   (match-record-lambda <autofs-configuration>
