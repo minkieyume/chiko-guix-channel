@@ -8,4 +8,6 @@
   #:use-module (gnu system privilege)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
-  #:export ())
+  #:export (chiko-xxx-networking))
+
+(define chiko-xxx-networking)
