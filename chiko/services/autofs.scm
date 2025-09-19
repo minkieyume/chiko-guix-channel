@@ -57,7 +57,7 @@
       (config-file master-file extra-files)
     `(("autofs.conf" ,config-file)
       ("auto.master" ,master-file)
-      ,@(map (lambda (file) (list #~(basename #$file) ,file)) extra-files))))
+      ,@extra-files)))
 
 (define autofs-shepherd-service
   (match-record-lambda <autofs-configuration>
