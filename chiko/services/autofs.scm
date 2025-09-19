@@ -26,7 +26,7 @@
    file-like
    "")
   (extra-files
-   (list '())
+   (alist '())
    "")
   (data-directory
    (string "/var/lib/sing-box")
