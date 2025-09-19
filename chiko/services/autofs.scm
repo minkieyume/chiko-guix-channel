@@ -56,8 +56,11 @@
   (match-record-lambda <autofs-configuration>
       (config-file master-file extra-files)
     `(("autofs.conf" ,config-file)
-      ("auto.master" ,master-file)
-      ,@extra-files)))
+      ("autofs/auto.master" ,master-file)
+      ,@(map (lambda (extra)
+               (let ((file-name (car extra))
+                     (file (cdr extra)))
+                 (list (string-append "autofs/" file-name) file))) extra-files))))
 
 (define autofs-shepherd-service
   (match-record-lambda <autofs-configuration>
