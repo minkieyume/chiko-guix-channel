@@ -12,7 +12,8 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (srfi srfi-13)
-  #:export ())
+  #:export (kavita-configuration
+            kavita-service-type))
 
 (define %kavita-accounts
   (list (user-account
