@@ -12,6 +12,7 @@
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
+  #:use-module (gnu services docker)
   #:use-module (srfi srfi-13)
   #:export (kavita-configuration
             kavita-service-type))
