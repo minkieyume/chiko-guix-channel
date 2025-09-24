@@ -64,10 +64,7 @@
                         (unless (file-exists? (string-append #$data-directory sub))
                           (mkdir-p (string-append #$data-directory sub))
                           (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
-                      sub-dirs))
-          (unless (file-exists? #$log-path)
-            (mkdir-p #$log-path)
-            (chown #$log-path (passwd:uid user) (passwd:gid user)))))))
+                      sub-dirs))))))
 
 (define kavita-oci-container
   (match-record-lambda <kavita-configuration>
