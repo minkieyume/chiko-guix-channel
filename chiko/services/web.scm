@@ -90,4 +90,5 @@
                               kavita-activation)
            (service-extension oci-container-service-type
                               kavita-oci-container)))
+    (default-value (doas-configuration))
     (description "运行Kavita服务")))
