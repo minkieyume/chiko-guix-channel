@@ -71,7 +71,7 @@
             (log-file log-file)
             (respawn? #t)
             (ports `((,(number->string port) . ,(number->string port))))
-            (environment (list `("TZ" . ,time-zone)))
+            (environment `(("TZ" . ,time-zone)))
             (volumes
              `((,(string-append data-directory "/manga") . "/manga")
                (,(string-append data-directory "/comics") . "/comics")
