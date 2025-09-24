@@ -56,6 +56,15 @@
           (unless (file-exists? #$data-directory)
             (mkdir-p #$data-directory)
             (chown #$data-directory (passwd:uid user) (passwd:gid user)))
+          (let ((sub-dirs '("/manga"
+                            "/comics"
+                            "/books"
+                            "/config")))
+            (for-each (lambda (sub)
+                        (unless (file-exists? (string-append #$data-directory sub))
+                          (mkdir-p (string-append #$data-directory sub))
+                          (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
+                      sub-dirs))
           (unless (file-exists? #$log-path)
             (mkdir-p #$log-path)
             (chown #$log-path (passwd:uid user) (passwd:gid user)))))))
