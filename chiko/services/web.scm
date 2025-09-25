@@ -94,7 +94,7 @@
                               (compose list kavita-configuration-log-file))
            (service-extension activation-service-type
                               kavita-activation)
-           (service-extension oci-container-service-type
+           (service-extension oci-service-type
                               kavita-oci-container)))
     (default-value (kavita-configuration))
     (description "运行Kavita服务")))
