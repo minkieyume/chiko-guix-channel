@@ -13,6 +13,7 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu services docker)
+  #:use-module (gnu services containers)
   #:use-module (srfi srfi-13)
   #:export (kavita-configuration
             kavita-service-type))
@@ -94,7 +95,7 @@
                               (compose list kavita-configuration-log-file))
            (service-extension activation-service-type
                               kavita-activation)
-           (service-extension oci-service-type
+           (service-extension oci-container-service-type
                               kavita-oci-container)))
     (default-value (kavita-configuration))
     (description "运行Kavita服务")))
