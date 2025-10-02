@@ -77,7 +77,7 @@
             (provision "kavita")
             (log-file log-file)
             (respawn? #t)
-            (ports `((,(number->string port) . ,(number->string port))))
+            (ports `((,(number->string port) . "5000")))
             (environment `(("TZ" . ,time-zone)))
             (volumes
              `((,(string-append data-directory "/manga") . "/manga")
@@ -99,3 +99,77 @@
                               kavita-oci-container)))
     (default-value (kavita-configuration))
     (description "运行Kavita服务")))
+
+(define %calibre-accounts
+  (list (user-account
+          (name "calibre")
+          (group "docker")
+          (system? #t)
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define-configuration/no-serialization calibre-web-configuration
+  (image
+   (string "linuxserver/calibre-web")
+   "")
+  (port
+   (number 5000)
+   "")
+  (data-directory
+   (string "/var/lib/calibre")
+   "")
+  (time-zone
+   (string "Asia/Shanghai")
+   "")
+  (log-file
+   (string "/var/log/calibre-web.log")
+   ""))
+
+(define calibre-activation
+  (match-record-lambda <calibre-web-configuration>
+      (data-directory log-file)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "calibre")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))
+          (let ((sub-dirs '("/books"
+                            "/config")))
+            (for-each (lambda (sub)
+                        (unless (file-exists? (string-append #$data-directory sub))
+                          (mkdir-p (string-append #$data-directory sub))
+                          (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
+                      sub-dirs))))))
+
+(define calibre-oci-container
+  (match-record-lambda <calibre-web-configuration>
+      (image log-file port data-directory time-zone)
+    (list (oci-container-configuration
+            (user "calibre")
+            (group "docker")
+            (image image)
+            (provision "calibre" "calibre-web")
+            (log-file log-file)
+            (respawn? #t)
+            (ports `((,(number->string port) . "8083")))
+            (environment `(("TZ" . ,time-zone)))
+            (volumes
+             `((,(string-append data-directory "/config") . "/config")
+               (,(string-append data-directory "/books") . "/books")
+               (,(string-append data-directory "/config") . "/config")))))))
+
+(define calibre-web-service-type
+  (service-type
+    (name 'calibre 'calibre-web)
+    (extensions
+     (list (service-extension account-service-type
+                              (const %calibre-accounts))
+           (service-extension log-rotation-service-type
+                              (compose list calibre-web-configuration-log-file))
+           (service-extension activation-service-type
+                              calibre-activation)
+           (service-extension oci-container-service-type
+                              calibre-oci-container)))
+    (default-value (calibre-web-configuration))
+    (description "运行Calibre Web服务")))
