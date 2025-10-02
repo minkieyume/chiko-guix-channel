@@ -162,7 +162,7 @@
 
 (define calibre-web-service-type
   (service-type
-    (name 'calibre 'calibre-web)
+    (name 'calibre-web)
     (extensions
      (list (service-extension account-service-type
                               (const %calibre-accounts))
