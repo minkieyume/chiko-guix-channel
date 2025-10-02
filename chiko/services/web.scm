@@ -16,7 +16,9 @@
   #:use-module (gnu services containers)
   #:use-module (srfi srfi-13)
   #:export (kavita-configuration
-            kavita-service-type))
+            kavita-service-type
+            calibre-web-configuration
+            calibre-web-service-type))
 
 (define %kavita-accounts
   (list (user-account
