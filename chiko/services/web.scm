@@ -158,8 +158,7 @@
             (environment `(("TZ" . ,time-zone)))
             (volumes
              `((,(string-append data-directory "/config") . "/config")
-               (,(string-append data-directory "/books") . "/books")
-               (,(string-append data-directory "/config") . "/config")))))))
+               (,(string-append data-directory "/books") . "/books")))))))
 
 (define calibre-web-service-type
   (service-type
