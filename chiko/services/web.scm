@@ -151,7 +151,7 @@
             (user "calibre")
             (group "docker")
             (image image)
-            (provision "calibre" "calibre-web")
+            (provision "calibre")
             (log-file log-file)
             (respawn? #t)
             (ports `((,(number->string port) . "8083")))
