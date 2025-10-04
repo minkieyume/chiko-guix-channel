@@ -115,7 +115,7 @@
    (string "linuxserver/calibre-web")
    "")
   (port
-   (number 5000)
+   (number 8083)
    "")
   (data-directory
    (string "/var/lib/calibre")
@@ -151,7 +151,7 @@
             (user "calibre")
             (group "docker")
             (image image)
-            (provision "calibre")
+            (provision "calibre-web")
             (log-file log-file)
             (respawn? #t)
             (ports `((,(number->string port) . "8083")))
