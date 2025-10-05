@@ -12,6 +12,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
+  #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -137,8 +138,83 @@ All of ekg’s data is stored in a sqlite database. Notes are organized around t
      "An unofficial Copilot plugin for Emacs. ")
     (description
      "This plugin is unofficial, however it makes use of the official @github/copilot-language-server provided by Microsoft.")
-    (license license:gpl3+)))
+    (license license:expat)))
+
+;; (define-public emacs-codeium
+;;   (package
+;;     (name "emacs-codeium")
+;;     (version "0.12.1")
+;;     (source
+;;      (origin
+;;        (method git-fetch)
+;;        (uri (git-reference
+;; 	      (url "https://github.com/Exafunction/codeium.el")
+;; 	      (commit "d815912878becffda76c1c6b41294604629e0e10")))
+;;        (file-name (git-file-name name version))
+;;        (sha256
+;;         (base32 "0j5ym3b6b862w8r8nn6lbln4pdi1sr2a2g2il8fil2himwpyxhhm"))))
+;;     (build-system emacs-build-system)
+;;     (propagated-inputs (list emacs-compat))
+;;     (home-page "https://github.com/Exafunction/codeium.el")
+;;     (synopsis
+;;      " Free, ultrafast Copilot alternative for Emacs  ")
+;;     (description
+;;      "Codeium autocompletes your code with AI in all major IDEs. We launched this implementation of the Codeium plugin for Emacs to bring this modern coding superpower to more developers. Check out our playground if you want to quickly try out Codeium online.
+;; codeium.el provides a completion-at-point-functions backend. It is designed to be use with a front-end, such as company-mode, corfu, or the built-in completion-at-point.
+
+;; codeium.el is an open source client and (mostly) written by Alan Chen. It uses a proprietary language server binary, currently downloaded (automatically, with confirmation) from here. Use M-x codeium-diagnose to see apis/fields that would be sent to the local language server, and the command used to run the local language server. Customize codeium-api-enabled, codeium-fields-regexps and codeium-command to change them.
+
+;; Contributions are welcome! Feel free to submit pull requests and issues related to the package.")
+;;     (license license:expat)))
+
+(define-public emacs-codex
+  (package
+    (name "emacs-codex")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	      (url "https://github.com/mayphus/codex.el")
+	      (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "078sa66pbr750h2y3rgf0544d732zsnv0rjzdwg0429w8ldzk69z"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:tests? #f))
+    (propagated-inputs (list emacs-compat))
+    (home-page "https://github.com/mayphus/codex.el")
+    (synopsis
+     "Minimal helpers for launching the Codex CLI")
+    (description
+     "Minimal helpers for launching the Codex CLI from Emacs. Provides codex-run, which opens the Codex CLI inside a vterm buffer.")
+    (license license:expat)))
+
+(define-public emacs-claude-code-ide
+  (package
+    (name "emacs-claude-code-ide")
+    (version "main")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	      (url "https://github.com/manzaltu/claude-code-ide.el")
+	      (commit "32d853e20b9d245a6ee89c4a153a4e568250c62c")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ba33pqrzllfnwc87ql9cisqmwlhci741x871b4jhipajm8jgdrs"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:tests? #f))
+    (propagated-inputs (list emacs-compat))
+    (home-page "https://github.com/manzaltu/claude-code-ide.el")
+    (synopsis
+     "Claude Code IDE integration for Emacs")
+    (description
+     "Claude Code IDE for Emacs provides native integration with Claude Code CLI through the Model Context Protocol (MCP). Unlike simple terminal wrappers, this package creates a bidirectional bridge between Claude and Emacs, enabling Claude to understand and leverage Emacs’ powerful features—from LSP and project management to custom Elisp functions. This transforms Claude into a true Emacs-aware AI assistant that works within your existing workflow and can interact with your entire Emacs ecosystem.")
+    (license license:expat)))
 
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide)
 
