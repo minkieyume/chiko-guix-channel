@@ -13,6 +13,7 @@
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages node)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -132,7 +133,7 @@ All of ekg’s data is stored in a sqlite database. Notes are organized around t
     (build-system emacs-build-system)
     (arguments
      (list #:tests? #f))
-    (propagated-inputs (list emacs-compat emacs-f emacs-editorconfig))
+    (propagated-inputs (list emacs-compat emacs-f emacs-editorconfig node))
     (home-page "https://github.com/copilot-emacs/copilot.el")
     (synopsis
      "An unofficial Copilot plugin for Emacs. ")
