@@ -115,6 +115,30 @@ This package is useful for simple applications that don’t want to write their 
 All of ekg’s data is stored in a sqlite database. Notes are organized around tags, and you can view many notes by looking at one or more tags.")
     (license license:gpl3+)))
 
+(define-public emacs-copilot
+  (package
+    (name "emacs-copilot")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	      (url "https://github.com/copilot-emacs/copilot.el")
+	      (commit "6a2ad80489b8a0d021df95293eb7ac370aea140b")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f2gxzg9vz6pwzaygqq99z5ii3ccpcv3031qnm03mql7zdwm29ba"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:tests? #f))
+    (propagated-inputs (list emacs-compat emacs-f emacs-editorconfig))
+    (home-page "https://github.com/copilot-emacs/copilot.el")
+    (synopsis
+     "An unofficial Copilot plugin for Emacs. ")
+    (description
+     "This plugin is unofficial, however it makes use of the official @github/copilot-language-server provided by Microsoft.")
+    (license license:gpl3+)))
+
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot)
 
