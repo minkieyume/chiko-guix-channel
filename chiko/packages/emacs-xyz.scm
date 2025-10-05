@@ -141,6 +141,31 @@ All of ekg’s data is stored in a sqlite database. Notes are organized around t
      "This plugin is unofficial, however it makes use of the official @github/copilot-language-server provided by Microsoft.")
     (license license:expat)))
 
+(define-public emacs-copilot-chat
+  (package
+    (name "emacs-copilot-chat")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	      (url "https://github.com/chep/copilot-chat.el")
+	      (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1llj5513k3dqch7lfrxmv4rjbmk267hv8pq6zapa2k5y06h28gx2"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:tests? #f))
+    (propagated-inputs (list emacs-compat emacs-f emacs-editorconfig node emacs-mcp emacs-magit emacs-polymode emacs-request emacs-markdown-mode
+                             emacs-shell-maker))
+    (home-page "https://github.com/chep/copilot-chat.el")
+    (synopsis
+     " Chat with Github copilot in Emacs ! ")
+    (description
+     "This plugin allows you to chat with GitHub copilot.")
+    (license license:expat)))
+
 ;; (define-public emacs-codeium
 ;;   (package
 ;;     (name "emacs-codeium")
@@ -216,6 +241,30 @@ All of ekg’s data is stored in a sqlite database. Notes are organized around t
      "Claude Code IDE for Emacs provides native integration with Claude Code CLI through the Model Context Protocol (MCP). Unlike simple terminal wrappers, this package creates a bidirectional bridge between Claude and Emacs, enabling Claude to understand and leverage Emacs’ powerful features—from LSP and project management to custom Elisp functions. This transforms Claude into a true Emacs-aware AI assistant that works within your existing workflow and can interact with your entire Emacs ecosystem.")
     (license license:expat)))
 
+(define-public emacs-company-box-chiko
+  (package
+    (name "emacs-company-box-chiko")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	      (url "https://github.com/sebastiencs/company-box")
+	      (commit "c4f2e243fba03c11e46b1600b124e036f2be7691")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08bqg65zjpfk5raa0yd2p3v5h35yq1ksr62dx4wdznjc2zb3drk4"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:tests? #f))
+    (propagated-inputs (list emacs-compat emacs-company emacs-all-the-icons emacs-dash emacs-frame-local))
+    (home-page "https://github.com/sebastiencs/company-box")
+    (synopsis
+     "A company-mode frontend with icons and documentation")
+    (description
+     "A company-mode frontend with icons and documentation. Company-box is a modern and fast company-mode frontend that displays completion candidates in a child frame with icons, annotations, and documentation. It supports all backends and is highly customizable.")
+    (license license:gpl3+)))
+
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat)
 
