@@ -3,7 +3,8 @@
   #:use-module (ice-9 match)
   #:use-module (guix gexp)
   #:use-module (guix records)
-  #:use-module (guix packages)  
+  #:use-module (guix store)
+  #:use-module (guix packages)
   #:use-module (gnu packages file-systems)
   #:use-module (gnu packages linux)
   #:use-module (gnu services)
@@ -173,4 +174,76 @@
            (service-extension oci-container-service-type
                               calibre-oci-container)))
     (default-value (calibre-web-configuration))
+    (description "运行Calibre Web服务")))
+
+(define %webdav-accounts
+  (list (user-account
+          (name "webdav")
+          (group "docker")
+          (system? #t)
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define-configuration/no-serialization webdav-configuration
+  (image
+   (string "ghcr.io/hacdias/webdav")
+   "")
+  (port
+   (number 6060)
+   "")
+  (data-directory
+   (string "/var/lib/webdav")
+   "")
+  (time-zone
+   (string "Asia/Shanghai")
+   "")
+  (config-file
+   file-like
+   "")
+  (log-file
+   (string "/var/log/webdav.log")
+   ""))
+
+(define webdav-activation
+  (match-record-lambda <webdav-configuration>
+      (data-directory log-file)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "webdav")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))))))
+
+(define webdav-oci-container
+  (match-record-lambda <webdav-configuration>
+      (image log-file config-file port data-directory time-zone)
+    (list (oci-container-configuration
+            (user "webdav")
+            (group "docker")
+            (image image)
+            (provision "webdav")
+            (log-file log-file)
+            (respawn? #t)
+            (ports `((,(number->string port) . "6060")))
+            (environment `(("TZ" . ,time-zone)))
+            (volumes
+             `((,(derivation->output-path config-file) . "/config.yml:ro")
+               (,data-directory . "/data")))
+            (command (list "-c" "/config.yml"))))))
+
+(define webdav-web-service-type
+  (service-type
+    (name 'webdav)
+    (extensions
+     (list (service-extension account-service-type
+                              (const %webdav-accounts))
+           (service-extension log-rotation-service-type
+                              (compose list webdav-configuration-log-file))
+           (service-extension activation-service-type
+                              webdav-activation)
+           (service-extension oci-container-service-type
+                              webdav-oci-container)))
     (description "运行Calibre Web服务")))
