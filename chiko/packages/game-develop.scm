@@ -14,6 +14,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages appimage)
   #:use-module (gnu packages elf))
 
 (define-public tiled-appimage
@@ -59,6 +60,8 @@
            #t))))
     (native-inputs
      `(("bash" ,bash)))
+    (inputs
+     `(("appimage-type2-runtime" ,appimage-type2-runtime)))
     (home-page "https://www.mapeditor.org/")
     (synopsis "通用的瓦片地图编辑器")
     (description
