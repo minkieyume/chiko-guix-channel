@@ -35,7 +35,7 @@
 (define-public emacs-llm
   (package
     (name "emacs-llm")
-    (version "0.27.1")
+    (version "0.27.2")
     (source
      (origin
        (method git-fetch)
@@ -44,7 +44,7 @@
 	      (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nx6rwv6ay061nvyik0m4b633jnkwscz6k4nr03h8fdq8930mdif"))))
+        (base32 "15hsfsmaq5miqra6yrlpwnzniab9jhzrj9vg74f2879lp96fbzpy"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -265,6 +265,66 @@ All of ekg’s data is stored in a sqlite database. Notes are organized around t
      "A company-mode frontend with icons and documentation. Company-box is a modern and fast company-mode frontend that displays completion candidates in a child frame with icons, annotations, and documentation. It supports all backends and is highly customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-vecdb
+  (let ((commit "5430f014076d305120e8cd0eca64d6ce8d19e167")
+        (revision "0"))
+    (package
+      (name "emacs-vecdb")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/ahyatt/vecdb")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "041f001749hc1ly32zd8drw721php8m5fwq918ii5mrv1g1ykbvs"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))
+      (propagated-inputs (list emacs-compat emacs-llm emacs-pg))
+      (home-page "https://github.com/ahyatt/vecdb")
+      (synopsis
+       "A simple vector database for Emacs")
+      (description
+       "vecdb is a simple vector database implementation for Emacs. It provides functionality for storing and querying high-dimensional vectors using various similarity metrics. This is particularly useful for applications involving embeddings, such as semantic search, recommendation systems, and working with Large Language Models (LLMs). The package supports efficient nearest neighbor search and can be used as a backend for various AI-powered Emacs applications.")
+      (license license:gpl3+))))
+
+(define-public emacs-ellama
+  (let ((commit "2857f85b8f10eb587afb8cb3da1d96cb236b2856")
+        (revision "0"))
+    (package
+      (name "emacs-ellama")
+      (version (git-version "1.8.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/s-kostyaev/ellama")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1q89z24vfj9r8x6rqcbif3nk987m7hh17n3jyk59q3iwivbgrpbd"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))
+      (propagated-inputs (list emacs-compat
+                               emacs-llm))
+      (home-page "https://github.com/s-kostyaev/ellama")
+      (synopsis
+       "Tool for interacting with LLMs in Emacs")
+      (description
+       "Ellama is a tool for interacting with large language models from Emacs.
+It allows users to ask questions, generate code, summarize text, and perform
+various other AI-assisted tasks directly within their Emacs workflow. Ellama
+uses the llm package as a backend, supporting multiple LLM providers including
+Ollama, Open AI, Vertex, GPT4All, and others. The package provides an intuitive
+interface for conversational AI interactions and can be customized to work with
+different models and providers.")
+      (license license:gpl3+))))
+
+
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama)
 
