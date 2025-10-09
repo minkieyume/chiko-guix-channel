@@ -29,7 +29,7 @@
 
 (define-configuration/no-serialization qdrant-configuration
   (image
-   (string "qdrant/qdrant:latest")
+   (string "qdrant/qdrant")
    "")
   (ports
    (list '(6333 6334))
