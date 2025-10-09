@@ -32,7 +32,7 @@
    (string "qdrant/qdrant:latest")
    "")
   (ports
-   (list-of-numbers '(6333 6334))
+   (list '(6333 6334))
    "")
   (data-directory
    (string "/var/lib/qdrant")
