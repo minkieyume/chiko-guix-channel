@@ -19,3 +19,4 @@
 * Source of part code
 ollama in ai.scm from [[https://codeberg.org/tusharhero/ollama-guix][ollama-guix]]
 buid-system/binary.scm from [[https://gitlab.com/nonguix/nonguix][nonguix]]
+utils/nonguix-utils.scm from [[https://gitlab.com/nonguix/nonguix][nonguix]]
