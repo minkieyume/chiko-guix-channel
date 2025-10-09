@@ -324,7 +324,50 @@ interface for conversational AI interactions and can be customized to work with
 different models and providers.")
       (license license:gpl3+))))
 
+(define-public emacs-elisa
+  (let ((commit "b655b59d371639d357dcabe48f1c2cd1694ee8de")
+        (revision "0"))
+    (package
+      (name "emacs-elisa")
+      (version (git-version "1.1.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/s-kostyaev/elisa")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1jwv4blhf9021758g212q8cf68a4hipj8nqgad00f54dxrr4s2h5"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))
+      (propagated-inputs (list emacs-compat
+                               emacs-llm
+                               emacs-async
+                               emacs-plz
+                               emacs-ellama))
+      (home-page "https://github.com/s-kostyaev/elisa")
+      (synopsis
+       "Emacs Lisp Information System Assistant - RAG-powered AI assistant")
+      (description
+       "Elisa is a RAG (Retrieval-Augmented Generation) system for Emacs that allows
+you to chat with your data.  It integrates with your documents, notes, and code
+to provide contextually relevant answers powered by Large Language Models.
+
+The package supports multiple embedding backends including local and cloud-based
+solutions, and can work with various document formats.  Elisa uses vector
+databases to efficiently retrieve relevant information and combines it with LLM
+capabilities to generate accurate, context-aware responses.
+
+Key features include:
++ Chat with your documents and codebase
++ Support for multiple embedding models (local and API-based)
++ Integration with various LLM providers through the llm package
++ Efficient vector similarity search for relevant context retrieval
++ Customizable indexing and retrieval strategies")
+      (license license:gpl3+))))
 
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama emacs-elisa)
 
