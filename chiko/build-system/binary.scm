@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Josselin Poiret <dev@jpoiret.xyz>
 
-(define-module (nonguix build-system binary)
+(define-module (chiko build-system binary)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix gexp)
