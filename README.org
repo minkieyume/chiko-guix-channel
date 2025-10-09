@@ -15,3 +15,7 @@
    (openpgp-fingerprint
     "F655 AB8D 8F94 0E9F 569C E97D 5DBC D441 1818 2F31"))))
 #+end_src
+
+* Source of part code
+ollama in ai.scm from [[https://codeberg.org/tusharhero/ollama-guix][ollama-guix]]
+buid-system/binary.scm from [[https://gitlab.com/nonguix/nonguix][nonguix]]
