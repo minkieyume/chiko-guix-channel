@@ -1,4 +1,4 @@
-(define-module (ollama-bin)
+(define-module (chiko packages ai)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (nonguix build-system binary)
