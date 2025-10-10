@@ -34,6 +34,9 @@
   (ports
    (list '(6333 6334))
    "")
+  (api-key
+   (string "")
+   "")
   (data-directory
    (string "/var/lib/qdrant")
    "")
@@ -62,7 +65,7 @@
 
 (define qdrant-oci-container
   (match-record-lambda <qdrant-configuration>
-      (image log-file ports data-directory time-zone)
+      (image log-file ports data-directory time-zone api-key)
     (list (oci-container-configuration
             (user "qdrant")
             (group "docker")
@@ -72,7 +75,8 @@
             (respawn? #t)
             (ports `((,(number->string (car ports)) . "6333")
                      (,(number->string (cadr ports)) . "6334")))
-            (environment `(("TZ" . ,time-zone)))
+            (environment `(("TZ" . ,time-zone)
+                           ("QDRANT__SERVICE__API_KEY" . ,api-key)))
             (volumes
              `((,(string-append data-directory "/storage") . "/qdrant/storage")))))))
 
