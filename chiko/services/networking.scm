@@ -5,7 +5,10 @@
   #:use-module (guix records)
   #:use-module (gnu services configuration)
   #:use-module (gnu packages admin)
+  #:use-module (gnu services)
+  #:use-module (gnu services admin)
   #:use-module (gnu system privilege)
+  #:use-module (gnu system setuid)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
   #:export (sing-box-service-type
