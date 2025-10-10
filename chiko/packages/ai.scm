@@ -10,9 +10,9 @@
   #:use-module (gnu packages base)
   #:use-module (nongnu packages nvidia))
 
-(define-public ollama-linux-amd64
+(define-public ollama-linux-amd64-nvidia
   (package
-    (name "ollama-linux-amd64")
+    (name "ollama-linux-amd64-nvidia")
     (version "0.12.3")
     (source
      (origin
@@ -64,4 +64,4 @@
 Run Llama 2, Code Llama, and other models. Customize and create your own.")
     (license license:expat)))
 
-(list ollama-linux-amd64)
+(list ollama-linux-amd64-nvidia)
