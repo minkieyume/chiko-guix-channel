@@ -144,21 +144,20 @@ All of ekg’s data is stored in a sqlite database. Notes are organized around t
 (define-public emacs-copilot-chat
   (package
     (name "emacs-copilot-chat")
-    (version "3.0.0")
+    (version "4.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
 	      (url "https://github.com/chep/copilot-chat.el")
-	      (commit (string-append "v" version))))
+	      (commit "15cf30010274f48a18f")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1llj5513k3dqch7lfrxmv4rjbmk267hv8pq6zapa2k5y06h28gx2"))))
+        (base32 "1s7401wbwfljk5yq82vxxaianq8r3qga9f4gn4dbfb3ikcnm7pvr"))))
     (build-system emacs-build-system)
     (arguments
      (list #:tests? #f))
-    (propagated-inputs (list emacs-compat emacs-f emacs-editorconfig node emacs-mcp emacs-magit emacs-polymode emacs-request emacs-markdown-mode
-                             emacs-shell-maker))
+    (propagated-inputs (list emacs-compat emacs-f emacs-editorconfig node emacs-mcp emacs-magit emacs-polymode emacs-request emacs-markdown-mode emacs-aio emacs-shell-maker))
     (home-page "https://github.com/chep/copilot-chat.el")
     (synopsis
      " Chat with Github copilot in Emacs ! ")
