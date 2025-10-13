@@ -74,7 +74,7 @@
 	(provision '(singbox-tcd sing-box-tcd))
 	(requirement '(sing-box))
 	(respawn? #f)
-        (auto-start? auto-start)
+        (auto-start? auto-start?)
 	(start #~(lambda _
 		   (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
 			  (nft #$(file-append (spec->pkg "nftables") "/sbin/nft"))
