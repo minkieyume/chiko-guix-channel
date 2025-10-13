@@ -7,6 +7,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages linux)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system privilege)
   #:use-module (gnu system setuid)
@@ -62,7 +63,7 @@
        (respawn-delay 20)
        (auto-start? auto-start?)
        (start #~(make-forkexec-constructor
-                 (list "/run/privileged/bin/sing-box" "run" "-c" #$config-file)
+                 (list #$(file-append sing-box "/bin/sing-box") "run" "-c" #$config-file)
                  #:log-file #$log-file
                  #:supplementary-groups '("netdev")
     		 #:user "singbox"
@@ -76,8 +77,8 @@
 	(respawn? #f)
         (auto-start? auto-start?)
 	(start #~(lambda _
-		   (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
-			  (nft #$(file-append (spec->pkg "nftables") "/sbin/nft"))
+		   (let* ((ip #$(file-append iproute2 "/sbin/ip"))
+			  (nft #$(file-append nftables "/sbin/nft"))
 			  (ste (system* nft "add" "table" "inet" "sing-box"))
 			  (st0 (system* nft "-f" #$(local-file "../files/config/singbox/singbox-tproxy.nft")))
 			  (st1 (system* ip "route" "add" "local" "default" "dev" "lo" "table" "100"))
@@ -88,8 +89,8 @@
 				 (= 0 (status:exit-val st)))
 			       (list ste st0 st1 st2 st3 st4))))))
 	(stop #~(lambda _
-		  (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
-			 (nft #$(file-append (spec->pkg "nftables") "/sbin/nft"))
+		  (let* ((ip #$(file-append iproute2 "/sbin/ip"))
+			 (nft #$(file-append nftables "/sbin/nft"))
 			 (st0 (system* nft "delete" "table" "inet" "sing-box"))
 			 (st1 (system* ip "rule" "del" "fwmark" "1" "table" "100"))
 			 (st2 (system* ip "route" "del" "local" "default" "dev" "lo" "table" "100"))
