@@ -112,7 +112,7 @@
            (service-extension log-rotation-service-type
                               (compose list sing-box-configuration-log-file))
            (service-extension privileged-program-service-type
-                              (compose list (lambda (cfg) (list (privileged-program
-                                                                  (program (file-append (sing-box-configuration-sing-box cfg) "/bin/sing-box"))
-                                                                  (capabilities "cap_net_admin,cap_net_bind_service,cap_net_raw+ep"))))))))
+                              (lambda (cfg) (list (privileged-program
+                                                    (program (file-append (sing-box-configuration-sing-box cfg) "/bin/sing-box"))
+                                                    (capabilities "cap_net_admin,cap_net_bind_service,cap_net_raw+ep")))))))
     (description "")))
