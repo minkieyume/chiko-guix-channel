@@ -36,7 +36,7 @@
   (log-file
    (string "/var/log/sing-box.log")
    "")
-  (auto-start
+  (auto-start?
    (boolean #t)
    ""))
 
@@ -52,7 +52,7 @@
 
 (define sing-box-shepherd-service
   (match-record-lambda <sing-box-configuration>
-      (sing-box log-file auto-start)
+      (sing-box log-file auto-start?)
     (list
      (shepherd-service
        (documentation "Run sing-box singing listener.")
@@ -60,7 +60,7 @@
        (requirement '(networking))
        (respawn-limit 100)
        (respawn-delay 20)
-       (auto-start? auto-start)
+       (auto-start? auto-start?)
        (start #~(make-forkexec-constructor
                  (list "/run/privileged/bin/sing-box" "run" "-c" #$config-file)
                  #:log-file #$log-file
