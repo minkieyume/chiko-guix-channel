@@ -52,7 +52,7 @@
 
 (define sing-box-shepherd-service
   (match-record-lambda <sing-box-configuration>
-      (sing-box log-file auto-start?)
+      (sing-box log-file auto-start? config-file)
     (list
      (shepherd-service
        (documentation "Run sing-box singing listener.")
