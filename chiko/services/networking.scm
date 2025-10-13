@@ -63,7 +63,7 @@
        (respawn-delay 20)
        (auto-start? auto-start?)
        (start #~(make-forkexec-constructor
-                 (list #$(file-append sing-box "/bin/sing-box") "run" "-c" #$config-file)
+                 (list "/run/privileged/bin/sing-box" "run" "-c" #$config-file)
                  #:log-file #$log-file
                  #:supplementary-groups '("netdev")
     		 #:user "singbox"
