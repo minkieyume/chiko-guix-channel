@@ -35,6 +35,9 @@
    "")
   (log-file
    (string "/var/log/sing-box.log")
+   "")
+  (auto-start
+   (boolean #t)
    ""))
 
 (define sing-box-activation
@@ -49,7 +52,7 @@
 
 (define sing-box-shepherd-service
   (match-record-lambda <sing-box-configuration>
-      (sing-box log-file)
+      (sing-box log-file auto-start)
     (list
      (shepherd-service
        (documentation "Run sing-box singing listener.")
@@ -57,6 +60,7 @@
        (requirement '(networking))
        (respawn-limit 100)
        (respawn-delay 20)
+       (auto-start? auto-start)
        (start #~(make-forkexec-constructor
                  (list "/run/privileged/bin/sing-box" "run" "-c" #$config-file)
                  #:log-file #$log-file
@@ -70,6 +74,7 @@
 	(provision '(singbox-tcd sing-box-tcd))
 	(requirement '(sing-box))
 	(respawn? #f)
+        (auto-start? auto-start)
 	(start #~(lambda _
 		   (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
 			  (nft #$(file-append (spec->pkg "nftables") "/sbin/nft"))
