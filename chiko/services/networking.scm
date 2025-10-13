@@ -76,8 +76,8 @@
        (respawn? #f)
        (auto-start? auto-start?)
        (start #~(lambda _
-		  (let* ((ip #$(file-append (@ (gnu packages linux) iproute2) "/sbin/ip"))
-			 (nft #$(file-append (@ (gnu packages linux) nftables) "/sbin/nft"))
+		  (let* ((ip #$(file-append iproute "/sbin/ip"))
+			 (nft #$(file-append nftables "/sbin/nft"))
 			 (ste (system* nft "add" "table" "inet" "sing-box"))
 			 (st0 (system* nft "-f" #$(local-file "../files/config/singbox/singbox-tproxy.nft")))
 			 (st1 (system* ip "route" "add" "local" "default" "dev" "lo" "table" "100"))
@@ -88,8 +88,8 @@
 				(= 0 (status:exit-val st)))
 			      (list ste st0 st1 st2 st3 st4))))))
        (stop #~(lambda _
-		 (let* ((ip #$(file-append (@ (gnu packages linux) iproute2) "/sbin/ip"))
-			(nft #$(file-append (@ (gnu packages linux) nftables) "/sbin/nft"))
+		 (let* ((ip #$(file-append iproute "/sbin/ip"))
+			(nft #$(file-append nftables "/sbin/nft"))
 			(st0 (system* nft "delete" "table" "inet" "sing-box"))
 			(st1 (system* ip "rule" "del" "fwmark" "1" "table" "100"))
 			(st2 (system* ip "route" "del" "local" "default" "dev" "lo" "table" "100"))
