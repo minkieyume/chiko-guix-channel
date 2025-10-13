@@ -31,6 +31,9 @@
   (config-file
    file-like
    "")
+  (tproxy-nft-config-file
+   file-like
+   "")
   (data-directory
    (string "/var/lib/sing-box")
    "")
@@ -53,7 +56,7 @@
 
 (define sing-box-shepherd-service
   (match-record-lambda <sing-box-configuration>
-      (sing-box log-file auto-start? config-file)
+      (sing-box log-file auto-start? config-file tproxy-nft-config-file)
     (list
      (shepherd-service
        (documentation "Run sing-box singing listener.")
@@ -79,7 +82,7 @@
 		  (let* ((ip #$(file-append iproute "/sbin/ip"))
 			 (nft #$(file-append nftables "/sbin/nft"))
 			 (ste (system* nft "add" "table" "inet" "sing-box"))
-			 (st0 (system* nft "-f" #$(local-file "../files/config/singbox/singbox-tproxy.nft")))
+			 (st0 (system* nft "-f" #$tproxy-nft-config-file))
 			 (st1 (system* ip "route" "add" "local" "default" "dev" "lo" "table" "100"))
 			 (st2 (system* ip "rule" "add" "fwmark" "1" "table" "100"))
 			 (st3 (system* ip "-6" "route" "add" "local" "default" "dev" "lo" "table" "100"))
