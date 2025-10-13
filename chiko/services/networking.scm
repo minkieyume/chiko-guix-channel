@@ -64,29 +64,35 @@
     		 #:user "singbox"
                  #:resource-limits '((nofile 100000 100000))))
        (stop #~(make-kill-destructor)))
-     (shepherd-service
-       (documentation "运行一个SingBox TCD，透明唱片播放程序")
-       (provision '(singbox-tcd sing-box-tcd))
-       (requirement '(sing-box))
-       (respawn? #f)
-       (start #~(lambda _
+     (list
+      (shepherd-service
+	(documentation "运行一个SingBox TCD，透明唱片播放程序")
+	(provision '(singbox-tcd sing-box-tcd))
+	(requirement '(sing-box))
+	(respawn? #f)
+	(start #~(lambda _
+		   (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
+			  (nft #$(file-append (spec->pkg "nftables") "/sbin/nft"))
+			  (ste (system* nft "add" "table" "inet" "sing-box"))
+			  (st0 (system* nft "-f" #$(local-file "../files/config/singbox/singbox-tproxy.nft")))
+			  (st1 (system* ip "route" "add" "local" "default" "dev" "lo" "table" "100"))
+			  (st2 (system* ip "rule" "add" "fwmark" "1" "table" "100"))
+			  (st3 (system* ip "-6" "route" "add" "local" "default" "dev" "lo" "table" "100"))
+			  (st4 (system* ip "-6" "rule" "add" "fwmark" "1" "table" "100")))
+		     (and (map (lambda (st)
+				 (= 0 (status:exit-val st)))
+			       (list ste st0 st1 st2 st3 st4))))))
+	(stop #~(lambda _
 		  (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
-			 (st1 (system* ip "route" "add" "local" "default" "dev" "lo" "table" "100"))
-			 (st2 (system* ip "rule" "add" "fwmark" "1" "table" "100"))
-			 (st3 (system* ip "-6" "route" "add" "local" "default" "dev" "lo" "table" "100"))
-			 (st4 (system* ip "-6" "rule" "add" "fwmark" "1" "table" "100")))
+			 (nft #$(file-append (spec->pkg "nftables") "/sbin/nft"))
+			 (st0 (system* nft "delete" "table" "inet" "sing-box"))
+			 (st1 (system* ip "rule" "del" "fwmark" "1" "table" "100"))
+			 (st2 (system* ip "route" "del" "local" "default" "dev" "lo" "table" "100"))
+			 (st3 (system* ip "-6" "rule" "del" "fwmark" "1" "table" "100"))
+			 (st4 (system* ip "-6" "route" "del" "local" "default" "dev" "lo" "table" "100")))
 		    (and (map (lambda (st)
 				(= 0 (status:exit-val st)))
-			      (list st1 st2 st3 st4))))))
-       (stop #~(lambda _
-		 (let* ((ip #$(file-append (spec->pkg "iproute2") "/sbin/ip"))
-			(st1 (system* ip "rule" "del" "fwmark" "1" "table" "100"))
-			(st2 (system* ip "route" "del" "local" "default" "dev" "lo" "table" "100"))
-			(st3 (system* ip "-6" "rule" "del" "fwmark" "1" "table" "100"))
-			(st4 (system* ip "-6" "route" "del" "local" "default" "dev" "lo" "table" "100")))
-		   (and (map (lambda (st)
-			       (= 0 (status:exit-val st)))
-			     (list st1 st2 st3 st4))))))))))
+			      (list st0 st1 st2 st3 st4)))))))))))
 
 (define sing-box-service-type
   (service-type
