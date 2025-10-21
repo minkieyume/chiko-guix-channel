@@ -367,5 +367,34 @@ Key features include:
 + Customizable indexing and retrieval strategies")
       (license license:gpl3+))))
 
+(define-public emacs-aider
+  (let ((commit "7fc7041524f960bac46098dfcd23d096f8c7f0b9")
+        (revision "0"))
+    (package
+      (name "emacs-aider")
+      (version (git-version "0.13.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/tninja/aider.el")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cwhmizknq31v5mdj173wsqzvf4cp272hff93mwiq21xc4dqsca6"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))
+      (propagated-inputs (list emacs-compat
+                               emacs-magit
+                               emacs-markdown-mode
+                               emacs-s))
+      (home-page "https://github.com/tninja/aider.el")
+      (synopsis
+       "Emacs integration for Aider AI coding assistant")
+      (description
+       "aider.el is an Emacs package that integrates the Aider AI coding assistant into Emacs. It allows users to interact with Aider directly from their editor, providing features such as code completion, refactoring, and conversational AI assistance for programming tasks. The package leverages Aider's capabilities to enhance the Emacs development workflow, making it easier to write, review, and improve code with AI-powered suggestions.")
+      (license license:gpl3+))))
+
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama emacs-elisa)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama emacs-elisa emacs-forge emacs-aider)
