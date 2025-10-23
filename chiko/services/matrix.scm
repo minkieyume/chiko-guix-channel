@@ -88,7 +88,7 @@
               (system* #$(file-append synapse "/bin/generate_config")
                        "--server-name" #$server-name
                        "--config-dir" #$(string-append data-directory "/config")
-                       "--data-dir" #$(data-directory "/data")
+                       "--data-dir" #$(string-append data-directory "/data")
                        "--report-stats" #$(if report-stats? "yes" "no")
                        "--generate-secrets"
                        "-o" config-path)
