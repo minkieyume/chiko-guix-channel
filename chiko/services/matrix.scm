@@ -11,7 +11,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages python)
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
@@ -70,7 +69,7 @@
             (chown #$data-directory (passwd:uid user) (group:gid group)))
           
           ;; 创建子目录
-          (let ((sub-dirs '("/logs" "/media" "/uploads")))
+          (let ((sub-dirs '("/data" "/workers" "/config")))
             (for-each (lambda (sub)
                         (let ((dir (string-append #$data-directory sub)))
                           (unless (file-exists? dir)
@@ -82,32 +81,52 @@
           (unless (file-exists? #$log-file)
             (call-with-output-file #$log-file (lambda (port) #t))
             (chown #$log-file (passwd:uid user) (group:gid group))
-            (chmod #$log-file #o640))))))
+            (chmod #$log-file #o640))
+                    
+          ;; 生成 homeserver 配置文件（仅当未提供自定义配置时）
+          (let ((config-path (string-append #$data-directory "/config/homeserver.yaml")))
+            (unless (or #$config-file (file-exists? config-path))
+              (system* #$(file-append synapse "/bin/generate_config")
+                       "--server-name" #$server-name
+                       "--config-dir" #$(string-append data-directory "/config")
+                       "--data-dir" #$(data-directory "/data")
+                       "--report-stats" #$(if report-stats? "yes" "no")
+                       "--generate-secrets"
+                       "-o" config-path)
+              (chown config-path (passwd:uid user) (group:gid group))))
+          
+          ;; 生成日志配置文件
+          (let ((log-config-path (string-append #$data-directory "/config/" #$server-name ".log.config")))
+            (unless (file-exists? log-config-path)
+              (system* #$(file-append synapse "/bin/generate_log_config")
+                       "-o" log-config-path
+                       "-f" #$log-file)
+              (chown log-config-path (passwd:uid user) (group:gid group))))
+
+          ;; 生成签名密钥
+          (let ((signing-key-path (string-append #$data-directory "/config/" #$server-name ".signing.key")))
+            (unless (file-exists? signing-key-path)
+              (system* #$(file-append synapse "/bin/generate_signing_key.py")
+                       "-o" signing-key-path)
+              (chown signing-key-path (passwd:uid user) (group:gid group))))))))
 
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>
       (synapse server-name config-file data-directory log-file report-stats? auto-start?)
     (let ((config-path (if config-file
                            config-file
-                           (string-append data-directory "/homeserver.yaml"))))
+                           (string-append data-directory "/config/homeserver.yaml"))))
       (list (shepherd-service
               (documentation "Synapse Matrix homeserver")
               (provision '(synapse matrix-synapse))
               (requirement '(networking))
               (start #~(make-forkexec-constructor
-                        (list #$(file-append python-wrapper "/bin/python")
-                              "-m" "synapse.app.homeserver"
-                              "--server-name" #$server-name
-                              "--config-path" #$config-path                              
-                              #$(string-append "--report-stats=" 
-                                               (if report-stats? "yes" "no"))
-                              (if (file-exists? #$config-path)
-                                    ""
-                                    "--generate-config"))
+                        (list #$(file-append synapse "/bin/synctl")
+                              "-a" #$(string-append data-directory "/workers")
+                              "--no-daemonize"
+                              "start" #$(string-append #$config-path))
                         #:user "synapse"
-                        #:group "synapse"
-                        #:directory #$data-directory
-                        #:log-file #$log-file))
+                        #:group "synapse"))
               (stop #~(make-kill-destructor))
               (auto-start? auto-start?))))))
 
