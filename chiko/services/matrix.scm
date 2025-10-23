@@ -21,7 +21,7 @@
 ;; Synapse AI生成，未测试。
 (define-configuration/no-serialization synapse-configuration
   (synapse
-   file-like
+   (file-like synapse)
    "Synapse 包")
   (server-name
    (string "matrix.example.com")
