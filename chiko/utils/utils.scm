@@ -1,4 +1,4 @@
-(define-module (chiko utils)
+(define-module (chiko utils utils)
   #:use-module (srfi srfi-1)
   #:use-module (guix channels)
   #:use-module (guix gexp)

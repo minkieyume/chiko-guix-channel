@@ -20,7 +20,6 @@
 
 (define-maybe file-like)
 
-;; Synapse AI生成，未测试。
 (define-configuration/no-serialization synapse-configuration
   (synapse
    (file-like synapse)
