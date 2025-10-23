@@ -51,11 +51,6 @@
           (home-directory "/var/lib/synapse")
           (shell (file-append shadow "/sbin/nologin")))))
 
-(define %synapse-groups
-  (list (user-group
-         (name "synapse")
-         (system? #t))))
-
 (define synapse-activation
   (match-record-lambda <synapse-configuration>
       (data-directory log-file server-name config-file synapse report-stats?)
@@ -130,8 +125,6 @@
     (extensions
      (list (service-extension account-service-type
                               (const %synapse-accounts))
-           (service-extension user-groups-service-type
-                              (const %synapse-groups))
            (service-extension activation-service-type
                               synapse-activation)
            (service-extension shepherd-root-service-type
