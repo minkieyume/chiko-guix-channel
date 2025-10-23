@@ -5,6 +5,7 @@
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages file-systems)
   #:use-module (gnu packages linux)
   #:use-module (gnu services)
