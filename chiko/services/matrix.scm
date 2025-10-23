@@ -105,11 +105,7 @@
                                     "--generate-config"))
                         #:user "synapse"
                         #:group "synapse"
-                        #:directory #$data-directory
-                        #:log-file #$log-file
-                        #:environment-variables
-                        (list (string-append "HOME=" #$data-directory)
-                              (string-append "SYNAPSE_CONFIG_PATH=" #$config-path))))
+                        #:log-file #$log-file))
               (stop #~(make-kill-destructor))
               (auto-start? auto-start?))))))
 
