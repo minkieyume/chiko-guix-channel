@@ -18,6 +18,8 @@
   #:export (synapse-configuration
             synapse-service-type))
 
+(define-maybe file-like)
+
 ;; Synapse AI生成，未测试。
 (define-configuration/no-serialization synapse-configuration
   (synapse
@@ -27,7 +29,7 @@
    (string "matrix.example.com")
    "Matrix 服务器域名")
   (config-file
-   maybe-file-like
+   (maybe-file-like #f)
    "Synapse 配置文件，如果提供则使用此配置文件")
   (data-directory
    (string "/var/lib/synapse")
@@ -120,6 +122,5 @@
                               synapse-shepherd-service)
            (service-extension log-rotation-service-type
                               (compose list synapse-configuration-log-file))))
-    (default-value (synapse-configuration
-                    (config-file #f)))
+    (default-value (synapse-configuration))
     (description "运行 Synapse Matrix homeserver 服务")))
