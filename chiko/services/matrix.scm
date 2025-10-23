@@ -100,7 +100,7 @@
                               "--config-path" #$config-path                              
                               #$(string-append "--report-stats=" 
                                                (if report-stats? "yes" "no"))
-                              #$(if (file-exists? config-path)
+                              (if (file-exists? #$config-path)
                                     ""
                                     "--generate-config"))
                         #:user "synapse"
