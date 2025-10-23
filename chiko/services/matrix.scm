@@ -27,7 +27,7 @@
    (string "matrix.example.com")
    "Matrix 服务器域名")
   (config-file
-   file-like
+   (file-like #f)
    "Synapse 配置文件，如果提供则使用此配置文件")
   (data-directory
    (string "/var/lib/synapse")
@@ -72,22 +72,6 @@
                             (chown dir (passwd:uid user) (group:gid group)))))
                       sub-dirs))
           
-          ;; 如果没有提供配置文件，生成默认配置
-          #$@(if (not config-file)
-                 #~((let ((config-path (string-append #$data-directory "/homeserver.yaml")))
-                      (unless (file-exists? config-path)
-                        (let ((report-stats #$(if report-stats? "yes" "no")))
-                          (invoke #$(file-append synapse "/bin/python")
-                                  "-m" "synapse.app.homeserver"
-                                  "--server-name" #$server-name
-                                  "--config-path" config-path
-                                  "--generate-config"
-                                  (string-append "--report-stats=" report-stats)
-                                  "--data-directory" #$data-directory))
-                        (chown config-path (passwd:uid user) (group:gid group))
-                        (chmod config-path #o640))))
-                 #~())
-          
           ;; 创建日志文件
           (unless (file-exists? #$log-file)
             (call-with-output-file #$log-file (lambda (port) #t))
@@ -96,7 +80,7 @@
 
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>
-      (synapse server-name config-file data-directory log-file auto-start?)
+      (synapse server-name config-file data-directory log-file report-stats? auto-start?)
     (let ((config-path (if config-file
                            config-file
                            (string-append data-directory "/homeserver.yaml"))))
@@ -108,7 +92,12 @@
                         (list #$(file-append synapse "/bin/python")
                               "-m" "synapse.app.homeserver"
                               "--server-name" #$server-name
-                              "--config-path" #$config-path)
+                              "--config-path" #$config-path                              
+                              #$(string-append "--report-stats=" 
+                                               (if report-stats? "yes" "no"))
+                              #$(if (file-exists? config-file)
+                                    ""
+                                    "--generate-config"))
                         #:user "synapse"
                         #:group "synapse"
                         #:directory #$data-directory
@@ -131,6 +120,5 @@
                               synapse-shepherd-service)
            (service-extension log-rotation-service-type
                               (compose list synapse-configuration-log-file))))
-    (default-value (synapse-configuration
-                    (synapse synapse)))
+    (default-value (synapse-configuration))
     (description "运行 Synapse Matrix homeserver 服务")))
