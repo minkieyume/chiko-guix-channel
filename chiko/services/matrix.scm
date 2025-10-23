@@ -105,6 +105,7 @@
                                     "--generate-config"))
                         #:user "synapse"
                         #:group "synapse"
+                        #:directory #$data-directory
                         #:log-file #$log-file))
               (stop #~(make-kill-destructor))
               (auto-start? auto-start?))))))
