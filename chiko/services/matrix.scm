@@ -10,7 +10,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages matrix)
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
@@ -23,7 +22,7 @@
 ;; Synapse AI生成，未测试。
 (define-configuration/no-serialization synapse-configuration
   (synapse
-   (file-like synapse)
+   (file-like (spec->pkg "synapse"))
    "Synapse 包")
   (server-name
    (string "matrix.example.com")
