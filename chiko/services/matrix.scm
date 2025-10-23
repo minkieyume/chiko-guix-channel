@@ -123,6 +123,5 @@
                               synapse-shepherd-service)
            (service-extension log-rotation-service-type
                               (compose list synapse-configuration-log-file))))
-    (default-value (synapse-configuration
-                    (config-file #f)))
+    (default-value (synapse-configuration))
     (description "运行 Synapse Matrix homeserver 服务")))
