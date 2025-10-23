@@ -47,8 +47,7 @@
 (define %synapse-accounts
   (list (user-group
           (name "synapse")
-          (system? #t)
-          (comment "Synapse Matrix homeserver group"))
+          (system? #t))
         (user-account
           (name "synapse")
           (group "synapse")
