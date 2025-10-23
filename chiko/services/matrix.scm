@@ -123,7 +123,7 @@
                         (list #$(file-append synapse "/bin/synctl")
                               "-a" #$(string-append data-directory "/workers")
                               "--no-daemonize"
-                              "start" #$(string-append #$config-path))
+                              "start" #$config-path)
                         #:user "synapse"
                         #:group "synapse"))
               (stop #~(make-kill-destructor))
