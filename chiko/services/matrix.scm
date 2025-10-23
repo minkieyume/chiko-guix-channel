@@ -40,7 +40,7 @@
   (log-file
    (string "/var/log/synapse.log")
    "日志文件路径")
-  (auto-start?
+  (auto-start
    (boolean #t)
    "是否自动启动服务"))
 
@@ -85,7 +85,7 @@
 
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>
-      (synapse server-name config-file data-directory log-file report-stats? auto-start?)
+      (synapse server-name config-file data-directory log-file report-stats? auto-start)
     (let ((config-path (if config-file
                            config-file
                            (string-append data-directory "/homeserver.yaml"))))
@@ -108,7 +108,7 @@
                         #:directory #$data-directory
                         #:log-file #$log-file))
               (stop #~(make-kill-destructor))
-              (auto-start? auto-start?))))))
+              (auto-start? auto-start))))))
 
 (define synapse-service-type
   (service-type
