@@ -5,9 +5,9 @@
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:use-module (gnu packages file-systems)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages matrix)
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
@@ -23,7 +23,7 @@
 ;; Synapse AI生成，未测试。
 (define-configuration/no-serialization synapse-configuration
   (synapse
-   (file-like (specification->package "synapse"))
+   (file-like synapse)
    "Synapse 包")
   (server-name
    (string "matrix.example.com")
@@ -40,7 +40,7 @@
   (log-file
    (string "/var/log/synapse.log")
    "日志文件路径")
-  (auto-start
+  (auto-start?
    (boolean #t)
    "是否自动启动服务"))
 
@@ -85,7 +85,7 @@
 
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>
-      (synapse server-name config-file data-directory log-file report-stats? auto-start)
+      (synapse server-name config-file data-directory log-file report-stats? auto-start?)
     (let ((config-path (if config-file
                            config-file
                            (string-append data-directory "/homeserver.yaml"))))
@@ -108,7 +108,7 @@
                         #:directory #$data-directory
                         #:log-file #$log-file))
               (stop #~(make-kill-destructor))
-              (auto-start? auto-start))))))
+              (auto-start? auto-start?))))))
 
 (define synapse-service-type
   (service-type
@@ -122,5 +122,6 @@
                               synapse-shepherd-service)
            (service-extension log-rotation-service-type
                               (compose list synapse-configuration-log-file))))
-    (default-value (synapse-configuration))
+    (default-value (synapse-configuration
+                    (config-file #f)))
     (description "运行 Synapse Matrix homeserver 服务")))
