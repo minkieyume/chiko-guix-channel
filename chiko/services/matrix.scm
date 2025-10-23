@@ -29,7 +29,7 @@
    (string "matrix.example.com")
    "Matrix 服务器域名")
   (config-file
-   (maybe-file-like #f)
+   maybe-file-like
    "Synapse 配置文件，如果提供则使用此配置文件")
   (data-directory
    (string "/var/lib/synapse")
