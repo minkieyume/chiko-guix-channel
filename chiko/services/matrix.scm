@@ -11,6 +11,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages python)
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
@@ -94,7 +95,7 @@
               (provision '(synapse matrix-synapse))
               (requirement '(networking))
               (start #~(make-forkexec-constructor
-                        (list #$(file-append synapse "/bin/python")
+                        (list #$(file-append python-wrapper "/bin/python")
                               "-m" "synapse.app.homeserver"
                               "--server-name" #$server-name
                               "--config-path" #$config-path                              
