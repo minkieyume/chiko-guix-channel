@@ -45,7 +45,11 @@
    "是否自动启动服务"))
 
 (define %synapse-accounts
-  (list (user-account
+  (list (user-group
+          (name "synapse")
+          (system? #t)
+          (comment "Synapse Matrix homeserver group"))
+        (user-account
           (name "synapse")
           (group "synapse")
           (system? #t)
