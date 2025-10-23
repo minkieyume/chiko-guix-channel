@@ -23,7 +23,7 @@
 ;; Synapse AI生成，未测试。
 (define-configuration/no-serialization synapse-configuration
   (synapse
-   (file-like (spec->pkg "synapse"))
+   (file-like (specification->package "synapse"))
    "Synapse 包")
   (server-name
    (string "matrix.example.com")
