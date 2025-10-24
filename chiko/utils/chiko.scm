@@ -9,7 +9,7 @@
   #:use-module (gnu services base)
   #:export (Ciallo～❨∠・ω<❩⌒☆))
 
-(define (Ciallo～❨∠・ω<❩⌒☆ :key (print? #t) (top? #t) . args)
+(define (Ciallo～❨∠・ω<❩⌒☆ #:key (print? #t) (top? #t) . args)
   (if (null? args)
       (when top? (format print? "Ciallo～❨∠・ω<❩⌒☆"))
       (let* ((lines (string-split (car args) #\newline))
@@ -20,10 +20,12 @@
         (if print?
             (begin
               (unless (null? (cdr lines))
-                (map (lambda (line) (format #t "~%Ciallo～❨∠・ω<❩⌒☆ ~a" line)) (cdr lines)))
-              (Ciallo～❨∠・ω<❩⌒☆ :print? #t :top? #f . (cdr args)))
+                (for-each (lambda (line) (format #t "~%Ciallo～❨∠・ω<❩⌒☆ ~a" line)) (cdr lines)))
+              (apply Ciallo～❨∠・ω<❩⌒☆
+                     (append (list #:print? #t #:top? #f) (cdr args))))
             (string-append first-ciallo
                            (if (null? (cdr lines))
                                ""
-                               (map (lambda (line) (format #f "~%Ciallo～❨∠・ω<❩⌒☆ ~a" line)) (cdr lines)))
-                           (Ciallo～❨∠・ω<❩⌒☆ :print? #f :top? #f . (cdr args)))))))
+                               (string-join (map (lambda (line) (format #f "~%Ciallo～❨∠・ω<❩⌒☆ ~a" line)) (cdr lines)) ""))
+                           (apply Ciallo～❨∠・ω<❩⌒☆
+                                  (append (list #:print? #f #:top? #f) (cdr args))))))))
