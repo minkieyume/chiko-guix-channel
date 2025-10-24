@@ -112,9 +112,9 @@
   ;;  (file-like synapse)
   ;;  "Synapse 包")
   (synapse
-   (oci-image
-     (repository "matrixdotorg/synapse")
-     (tag "latest"))
+   (oci-image (oci-image
+                (repository "matrixdotorg/synapse")
+                (tag "latest")))
    "Synapse 容器镜像")
   (server-name
    (string "matrix.example.com")
