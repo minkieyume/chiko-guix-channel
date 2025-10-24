@@ -1,4 +1,4 @@
-(define-module (gnu packages matrix)
+(define-module (chiko packages matrix)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
