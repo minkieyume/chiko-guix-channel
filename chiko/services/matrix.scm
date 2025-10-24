@@ -132,7 +132,6 @@
               (requirement '(networking))
               (start #~(make-forkexec-constructor
                         (list #$(file-append synapse "/bin/synctl")
-                              "-a" #$(string-append data-directory "/workers")
                               "--no-daemonize"
                               "start" #$config-path)
                         #:user "synapse"
