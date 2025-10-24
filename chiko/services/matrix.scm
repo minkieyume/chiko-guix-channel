@@ -95,7 +95,7 @@
               
               ;; 生成 homeserver 配置文件（仅当未提供自定义配置时）
               (let ((config-path (string-append #$data-directory "/config/homeserver.yaml")))
-                (unless (or #$config-file (file-exists? config-path))
+                (unless (or #$(maybe-value-set? config-file) (file-exists? config-path))
                   (system* #$(file-append synapse "/bin/generate_config")
                            "--server-name" #$server-name
                            "--config-dir" #$(string-append data-directory "/config")
@@ -123,7 +123,7 @@
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>
       (synapse server-name config-file data-directory log-file report-stats? auto-start?)
-    (let ((config-path (if config-file
+    (let ((config-path (if (maybe-value-set? config-file)
                            config-file
                            (string-append data-directory "/config/homeserver.yaml"))))
       (list (shepherd-service
