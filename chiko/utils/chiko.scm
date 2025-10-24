@@ -12,7 +12,7 @@
 (define (Ciallo～❨∠・ω<❩⌒☆ :key (print? #t) (top? #t) . args)
   (if (null? args)
       (when top? (format print? "Ciallo～❨∠・ω<❩⌒☆"))
-      (let* ((lines (string-split (car args) #newline))
+      (let* ((lines (string-split (car args) #\newline))
              (first-line (car lines))
              (first-ciallo (if top?
                                (format print? "Ciallo～❨∠・ω<❩⌒☆ ~a" first-line)
