@@ -194,6 +194,7 @@
       (list
        (oci-container-configuration
          (network "host")
+         (provision "synapse-generate-config")
          (image synapse)
          (user "synapse")
          (group "synapse")
