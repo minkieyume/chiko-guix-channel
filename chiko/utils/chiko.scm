@@ -9,7 +9,7 @@
   #:use-module (gnu services base)
   #:export (Ciallo～❨∠・ω<❩⌒☆))
 
-(define (Ciallo～❨∠・ω<❩⌒☆ #:key (print? #t) (top? #t) . args)
+(define* (Ciallo～❨∠・ω<❩⌒☆ #:key (print? #t) (top? #t) #:rest args)
   (if (null? args)
       (if top? (format print? "Ciallo～❨∠・ω<❩⌒☆") (format print? "~%"))
       (let* ((lines (string-split (car args) #\newline))
