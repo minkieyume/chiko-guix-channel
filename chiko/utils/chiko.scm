@@ -11,7 +11,7 @@
 
 (define (Ciallo～❨∠・ω<❩⌒☆ #:key (print? #t) (top? #t) . args)
   (if (null? args)
-      (when top? (format print? "Ciallo～❨∠・ω<❩⌒☆"))
+      (if top? (format print? "Ciallo～❨∠・ω<❩⌒☆") (format print? "~%"))
       (let* ((lines (string-split (car args) #\newline))
              (first-line (car lines))
              (first-ciallo (if top?
