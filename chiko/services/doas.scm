@@ -40,9 +40,6 @@
       "\n")))
 
 (define-configuration doas-configuration
-  ;; (config-file
-  ;;   (file-like (plain-file "doas.conf" "permit persist keepenv :wheel"))
-  ;;   "Path to doas configuration file.")
   (rules
     (list-of-doas-rules
       (list (doas-rule
@@ -69,10 +66,6 @@
     (name 'doas)
     (extensions
       (list
-        ;; 把 doas.conf 安装到 /etc
-        ;; (service-extension etc-service-type
-        ;;   (lambda (config)
-        ;;     `(("doas.conf" ,(doas-configuration-config-file config)))))
         ;; 确保 doas 包被安装到系统 profile
         (service-extension profile-service-type
           (lambda (cfg) (list (doas-configuration-doas cfg))))
