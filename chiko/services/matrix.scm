@@ -59,55 +59,61 @@
   (match-record-lambda <synapse-configuration>
       (data-directory log-file server-name config-file synapse report-stats?)
     #~(begin
-        (use-modules (guix build utils))
-        (let ((user (getpwnam "synapse"))
-              (group (getgrnam "synapse")))
-          ;; 创建数据目录
-          (unless (file-exists? #$data-directory)
-            (mkdir-p #$data-directory)
-            (chown #$data-directory (passwd:uid user) (group:gid group)))
-          
-          ;; 创建子目录
-          (let ((sub-dirs '("/data" "/workers" "/config")))
-            (for-each (lambda (sub)
-                        (let ((dir (string-append #$data-directory sub)))
-                          (unless (file-exists? dir)
-                            (mkdir-p dir)
-                            (chown dir (passwd:uid user) (group:gid group)))))
-                      sub-dirs))
-          
-          ;; 创建日志文件
-          (unless (file-exists? #$log-file)
-            (call-with-output-file #$log-file (lambda (port) #t))
-            (chown #$log-file (passwd:uid user) (group:gid group))
-            (chmod #$log-file #o640))
-                    
-          ;; 生成 homeserver 配置文件（仅当未提供自定义配置时）
-          (let ((config-path (string-append #$data-directory "/config/homeserver.yaml")))
-            (unless (or #$config-file (file-exists? config-path))
-              (system* #$(file-append synapse "/bin/generate_config")
-                       "--server-name" #$server-name
-                       "--config-dir" #$(string-append data-directory "/config")
-                       "--data-dir" #$(string-append data-directory "/data")
-                       "--report-stats" #$(if report-stats? "yes" "no")
-                       "--generate-secrets"
-                       "-o" config-path)
-              (chown config-path (passwd:uid user) (group:gid group))))
-          
-          ;; 生成日志配置文件
-          (let ((log-config-path (string-append #$data-directory "/config/" #$server-name ".log.config")))
-            (unless (file-exists? log-config-path)
-              (system* #$(file-append synapse "/bin/generate_log_config")
-                       "-o" log-config-path
-                       "-f" #$log-file)
-              (chown log-config-path (passwd:uid user) (group:gid group))))
+        (use-modules (guix build utils)
+                     (ice-9 exceptions))
+        (with-exception-handler
+          (lambda (exn)
+            (format #t "错误追踪：~a\n" exn))
+          (lambda ()
+            (let ((user (getpwnam "synapse"))
+                  (group (getgrnam "synapse")))
+              ;; 创建数据目录
+              (unless (file-exists? #$data-directory)
+                (mkdir-p #$data-directory)
+                (chown #$data-directory (passwd:uid user) (group:gid group)))
+              
+              ;; 创建子目录
+              (let ((sub-dirs '("/data" "/workers" "/config")))
+                (for-each (lambda (sub)
+                            (let ((dir (string-append #$data-directory sub)))
+                              (unless (file-exists? dir)
+                                (mkdir-p dir)
+                                (chown dir (passwd:uid user) (group:gid group)))))
+                          sub-dirs))
+              
+              ;; 创建日志文件
+              (unless (file-exists? #$log-file)
+                (call-with-output-file #$log-file (lambda (port) #t))
+                (chown #$log-file (passwd:uid user) (group:gid group))
+                (chmod #$log-file #o640))
+              
+              ;; 生成 homeserver 配置文件（仅当未提供自定义配置时）
+              (let ((config-path (string-append #$data-directory "/config/homeserver.yaml")))
+                (unless (or #$config-file (file-exists? config-path))
+                  (system* #$(file-append synapse "/bin/generate_config")
+                           "--server-name" #$server-name
+                           "--config-dir" #$(string-append data-directory "/config")
+                           "--data-dir" #$(string-append data-directory "/data")
+                           "--report-stats" #$(if report-stats? "yes" "no")
+                           "--generate-secrets"
+                           "-o" config-path)
+                  (chown config-path (passwd:uid user) (group:gid group))))
+              
+              ;; 生成日志配置文件
+              (let ((log-config-path (string-append #$data-directory "/config/" #$server-name ".log.config")))
+                (unless (file-exists? log-config-path)
+                  (system* #$(file-append synapse "/bin/generate_log_config")
+                           "-o" log-config-path
+                           "-f" #$log-file)
+                  (chown log-config-path (passwd:uid user) (group:gid group))))
 
-          ;; 生成签名密钥
-          (let ((signing-key-path (string-append #$data-directory "/config/" #$server-name ".signing.key")))
-            (unless (file-exists? signing-key-path)
-              (system* #$(file-append synapse "/bin/generate_signing_key.py")
-                       "-o" signing-key-path)
-              (chown signing-key-path (passwd:uid user) (group:gid group))))))))
+              ;; 生成签名密钥
+              (let ((signing-key-path (string-append #$data-directory "/config/" #$server-name ".signing.key")))
+                (unless (file-exists? signing-key-path)
+                  (system* #$(file-append synapse "/bin/generate_signing_key.py")
+                           "-o" signing-key-path)
+                  (chown signing-key-path (passwd:uid user) (group:gid group)))))))
+        )))
 
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>

@@ -21,11 +21,9 @@
             (begin
               (unless (null? (cdr lines))
                 (for-each (lambda (line) (format #t "~%Ciallo～❨∠・ω<❩⌒☆ ~a" line)) (cdr lines)))
-              (apply Ciallo～❨∠・ω<❩⌒☆
-                     (append (list #:print? #t #:top? #f) (cdr args))))
+              (apply Ciallo～❨∠・ω<❩⌒☆ #:print? #t #:top? #f (cdr args)))
             (string-append first-ciallo
                            (if (null? (cdr lines))
                                ""
                                (string-join (map (lambda (line) (format #f "~%Ciallo～❨∠・ω<❩⌒☆ ~a" line)) (cdr lines)) ""))
-                           (apply Ciallo～❨∠・ω<❩⌒☆
-                                  (append (list #:print? #f #:top? #f) (cdr args))))))))
+                           (apply Ciallo～❨∠・ω<❩⌒☆ #:print? #f #:top? #f (cdr args)))))))
