@@ -112,8 +112,7 @@
                 (unless (file-exists? signing-key-path)
                   (system* #$(file-append synapse "/bin/generate_signing_key.py")
                            "-o" signing-key-path)
-                  (chown signing-key-path (passwd:uid user) (group:gid group)))))))
-        )))
+                  (chown signing-key-path (passwd:uid user) (group:gid group))))))))))
 
 (define synapse-shepherd-service
   (match-record-lambda <synapse-configuration>
