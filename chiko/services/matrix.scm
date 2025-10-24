@@ -209,8 +209,8 @@
                         ("SYNAPSE_CONFIG_DIR" . "/config")
                         ("SYNAPSE_CONFIG_PATH" . "/config/homeserver.yaml")
                         ("SYNAPSE_DATA_DIR" . "/data")
-                        ("UID" . ,(passwd:uid (getpwnam "synapse")))
-                        ("GID" . ,(group:gid (getgrnam "synapse")))))
+                        ("UID" . ,(number->string (passwd:uid (getpwnam "synapse"))))
+                        ("GID" . ,(number->string (group:gid (getgrnam "synapse"))))))
          (volumes
           `((,(string-append data-directory "/data") . "/data")
             (,(string-append data-directory "/config") . "/config"))))
