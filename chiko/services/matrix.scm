@@ -197,7 +197,7 @@
          (image synapse)
          (user "synapse")
          (group "synapse")
-         (requirement '(users-home))
+         (requirement '(user-homes))
          (command
           '("generate"))
          (extra-arguments '("-it" "--rm"))
