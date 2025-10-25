@@ -129,8 +129,8 @@
   (report-stats?
    (boolean #f)
    "是否向 matrix.org 报告匿名统计信息")
-  (log-file
-   (string "/var/log/synapse.log")
+  (log-path
+   (string "/var/log/synapse")
    "日志文件路径")
   (time-zone
    (string "Asia/Shanghai")
@@ -153,7 +153,7 @@
 
 (define synapse-activation
   (match-record-lambda <synapse-configuration>
-      (data-directory log-file server-name config-file synapse report-stats?)
+      (data-directory log-path server-name config-file synapse report-stats?)
     #~(begin
         (use-modules (guix build utils)
                      (ice-9 exceptions))
@@ -173,11 +173,10 @@
                             (chown dir (passwd:uid user) (group:gid group)))))
                       sub-dirs))
               
-          ;; 创建日志文件
-          (unless (file-exists? #$log-file)
-            (call-with-output-file #$log-file (lambda (port) #t))
-            (chown #$log-file (passwd:uid user) (group:gid group))
-            (chmod #$log-file #o640))
+          ;; 创建日志目录
+          (unless (file-exists? #$log-path)
+            (mkdir-p #$log-path)
+            (chown #$log-path (passwd:uid user) (group:gid group)))
               
           ;; 链接配置文件（仅当提供自定义配置时）
           (when #$(maybe-value-set? config-file)
@@ -188,7 +187,7 @@
 
 (define synapse-oci-service
   (match-record-lambda <synapse-configuration>
-      (synapse server-name config-file data-directory log-file report-stats? auto-start? time-zone host-port)
+      (synapse server-name config-file data-directory log-path report-stats? auto-start? time-zone host-port)
     (oci-extension
      (containers
       (list
@@ -201,6 +200,7 @@
          (requirement '(user-homes))
          (command
           '("generate"))
+         (log-file (string-append log-path "/synapse-generate-config.log"))
          (extra-arguments '("-it" "--rm"))
          (auto-start? (not (file-exists? (string-append data-directory "/config/homeserver.yaml"))))
          (environment `(("TZ" . ,time-zone)
@@ -223,7 +223,7 @@
          (auto-start? auto-start?)
          (provision "synapse")
          (requirement '(networking))
-         (log-file log-file)
+         (log-file (string-append log-path "/synapse.log"))
          (shepherd-actions (list (shepherd-action
                                    (name 'register-user)
                                    (documentation "注册新的 Matrix 用户")
@@ -258,6 +258,8 @@
            (service-extension oci-service-type
                               synapse-oci-service)
            (service-extension log-rotation-service-type
-                              (compose list synapse-configuration-log-file))))
+                              (lambda ()
+                                (list (string-append synapse-configuration-log-path "/synapse.log")
+                                      (string-append synapse-configuration-log-path "/synapse-generate-config.log"))))))
     (default-value (synapse-configuration))
     (description "运行 Synapse Matrix homeserver 服务")))
