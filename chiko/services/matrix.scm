@@ -201,7 +201,7 @@
          (command
           '("generate"))
          (log-file (string-append log-path "/synapse-generate-config.log"))
-         (extra-arguments '("-it" "--rm"))
+         (extra-arguments '("--rm"))
          (auto-start? (not (file-exists? (string-append data-directory "/config/homeserver.yaml"))))
          (environment `(("TZ" . ,time-zone)
                         ("SYNAPSE_SERVER_NAME" . ,server-name)
@@ -228,7 +228,7 @@
                                    (name 'register-user)
                                    (documentation "注册新的 Matrix 用户")
                                    (procedure #~(lambda (running . args)
-                                                  (apply invoke (append (list "docker" "exec" "-it"
+                                                  (apply invoke (append (list "docker" "exec"
                                                                               "synapse" "register_new_matrix_user" "http://localhost:8008" "-c"
                                                                               "/data/homeserver.yaml")
                                                                         args))
