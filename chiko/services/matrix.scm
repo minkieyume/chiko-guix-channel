@@ -106,6 +106,7 @@
         ;;               (auto-start? auto-start?))))))
 
 (define-maybe file-like)
+(define-maybe number)
 
 (define-configuration/no-serialization synapse-configuration
   ;; (synapse
@@ -121,7 +122,7 @@
    (number 8008)
    "服务器监听端口")
   (fedi-port
-   (number 8448)
+   maybe-number
    "联邦通信端口")
   (config-file
    maybe-file-like
@@ -236,7 +237,9 @@
           '("run" "-m" "synapse.app.homeserver" "--config-path" "/config/homeserver.yaml"))
          (ports
           `((,(number->string host-port) . "8008")
-            (,(number->string fedi-port) . "8448")))
+            ,@(if (maybe-value-set? fedi-port)
+                  `((,(number->string (maybe-value-ref fedi-port)) . "8448"))
+                  '())))
          (volumes
           `((,(string-append data-directory "/data") . "/data")
             (,(string-append data-directory "/config") . "/config")))))))))
