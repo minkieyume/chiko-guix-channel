@@ -259,7 +259,8 @@
                               synapse-oci-service)
            (service-extension log-rotation-service-type
                               (lambda (cfg)
-                                (list (string-append synapse-configuration-log-path "/synapse.log")
-                                      (string-append synapse-configuration-log-path "/synapse-generate-config.log"))))))
+                                (let ((log-path (synapse-configuration-log-path cfg)))
+                                  (list (string-append log-path "/synapse.log")
+                                        (string-append log-path "/synapse-generate-config.log")))))))
     (default-value (synapse-configuration))
     (description "运行 Synapse Matrix homeserver 服务")))
