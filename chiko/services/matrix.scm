@@ -120,6 +120,9 @@
   (host-port
    (number 8008)
    "服务器监听端口")
+  (fedi-port
+   (number 8448)
+   "联邦通信端口")
   (config-file
    maybe-file-like
    "Synapse 配置文件，如果提供则使用此配置文件")
@@ -187,7 +190,8 @@
 
 (define synapse-oci-service
   (match-record-lambda <synapse-configuration>
-      (synapse server-name config-file data-directory log-path report-stats? auto-start? time-zone host-port)
+      (synapse server-name config-file data-directory log-path
+       report-stats? auto-start? time-zone host-port fedi-port)
     (oci-extension
      (containers
       (list
@@ -231,7 +235,8 @@
          (command
           '("run" "-m" "synapse.app.homeserver" "--config-path" "/config/homeserver.yaml"))
          (ports
-          `((,(number->string host-port) . "8008")))
+          `((,(number->string host-port) . "8008")
+            (,(number->string fedi-port) . "8448")))
          (volumes
           `((,(string-append data-directory "/data") . "/data")
             (,(string-append data-directory "/config") . "/config")))))))))
