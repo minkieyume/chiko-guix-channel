@@ -258,7 +258,7 @@
            (service-extension oci-service-type
                               synapse-oci-service)
            (service-extension log-rotation-service-type
-                              (lambda ()
+                              (lambda (cfg)
                                 (list (string-append synapse-configuration-log-path "/synapse.log")
                                       (string-append synapse-configuration-log-path "/synapse-generate-config.log"))))))
     (default-value (synapse-configuration))
