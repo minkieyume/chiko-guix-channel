@@ -112,7 +112,7 @@
   ;;  (file-like synapse)
   ;;  "Synapse 包")
   (synapse
-   (string "matrix-org/synapse:latest")
+   (string "matrixdotorg/synapse:latest")
    "Synapse 容器镜像")
   (server-name
    (string "matrix.example.com")
