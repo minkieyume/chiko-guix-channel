@@ -217,7 +217,7 @@
             (,(string-append data-directory "/config") . "/config"))))
        (oci-container-configuration
          (image synapse)
-         (network "host")
+         (network "bridge")
          (user "synapse")
          (group "docker")
          (auto-start? auto-start?)
