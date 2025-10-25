@@ -228,21 +228,6 @@
          (provision "synapse")
          (requirement '(networking))
          (log-file (string-append log-path "/synapse.log"))
-         (shepherd-actions (list (shepherd-action
-                                   (name 'register-user)
-                                   (documentation "注册新的 Matrix 用户")
-                                   (procedure #~(lambda (running . args)
-                                                  (apply invoke (append (list "docker" "exec"
-                                                                              "synapse" "register_new_matrix_user" "http://localhost:8008" "-c"
-                                                                              "/data/homeserver.yaml")
-                                                                        args))
-                                                  #t)))
-                                 (shepherd-action
-                                   (name 'log)
-                                   (documentation "查看日志")
-                                   (procedure #~(lambda (running . args)
-                                                  (invoke "docker" "logs" "-f" "synapse")
-                                                  #t)))))
          (command
           '("run" "-m" "synapse.app.homeserver" "--config-path" "/config/homeserver.yaml"))
          (ports
