@@ -197,7 +197,7 @@
          (provision "synapse-generate-config")
          (image synapse)
          (user "synapse")
-         (group "synapse")
+         (group "docker")
          (requirement '(user-homes))
          (command
           '("generate"))
@@ -219,7 +219,7 @@
          (image synapse)
          (network "host")
          (user "synapse")
-         (group "synapse")
+         (group "docker")
          (auto-start? auto-start?)
          (provision "synapse")
          (requirement '(networking))
