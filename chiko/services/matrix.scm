@@ -200,6 +200,8 @@
          (requirement '(user-homes))
          (command
           '("generate"))
+         (container-user (string-append ,(number->string (passwd:uid (getpwnam "synapse"))) ":"
+                                        ,(number->string (group:gid (getgrnam "synapse")))))
          (log-file (string-append log-path "/synapse-generate-config.log"))
          (extra-arguments '("--rm"))
          (auto-start? (not (file-exists? (string-append data-directory "/config/homeserver.yaml"))))
