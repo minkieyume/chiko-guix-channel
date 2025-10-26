@@ -141,7 +141,7 @@
    (boolean #t)
    "是否自动启动服务")
   (postgresql-password-file
-   string
+   (string "/var/lib/synapse/ppasu")
    "PostgreSQL 密码文件路径，用于数据库连接"))
 
 (define synapse-postgresql-role
