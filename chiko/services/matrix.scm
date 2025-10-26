@@ -14,6 +14,7 @@
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
   #:use-module (gnu services configuration)
+  #:use-module (gnu services databases)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu services docker)
@@ -138,7 +139,18 @@
    "时区设置")
   (auto-start?
    (boolean #t)
-   "是否自动启动服务"))
+   "是否自动启动服务")
+  (postgresql-password-file
+   file-like
+   "PostgreSQL 密码文件路径，用于数据库连接"))
+
+(define synapse-postgresql-role
+  (match-record-lambda <synapse-configuration>
+      (postgresql-password-file)
+    (list (postgresql-role
+            (name "synapse")
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
 
 (define %synapse-accounts
   (list (user-group
@@ -242,6 +254,8 @@
     (extensions
      (list (service-extension account-service-type
                               (const %synapse-accounts))
+           (service-extension postgresql-role-service-type
+                              synapse-postgresql-role)
            (service-extension activation-service-type
                               synapse-activation)
            (service-extension oci-service-type
