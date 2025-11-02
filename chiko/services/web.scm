@@ -311,7 +311,7 @@
          (image stalwart)
          (network "bridge")
          (user "stalwart")
-         (group "docker")
+         (group "stalwart")
          (ports ports)
          (auto-start? auto-start?)
          (provision "stalwart")
