@@ -312,8 +312,6 @@
          (network "bridge")
          (user "stalwart")
          (group "docker")
-         (container-user (string-append (number->string (passwd:uid (getpwnam "stalwart"))) ":"
-                                        (number->string (group:gid (getgrnam "stalwart")))))
          (ports ports)
          (auto-start? auto-start?)
          (provision "stalwart")
