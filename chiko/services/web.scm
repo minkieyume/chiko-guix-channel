@@ -324,7 +324,7 @@
 
 (define stalwart-service-type
   (service-type
-    (name 'stalwart-web)
+    (name 'stalwart)
     (extensions
      (list (service-extension account-service-type
                               (const %stalwart-accounts))
