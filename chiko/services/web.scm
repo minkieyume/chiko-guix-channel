@@ -246,4 +246,91 @@
                               webdav-activation)
            (service-extension oci-container-service-type
                               webdav-oci-container)))
-    (description "运行Calibre Web服务")))
+    (description "运行WebDav服务服务")))
+
+(define %stalwart-accounts
+  (list (user-group
+          (name "stalwart")
+          (system? #t))
+        (user-account
+          (name "stalwart")
+          (group "stalwart")
+          (system? #t)
+          (comment "Stalwart Mail Server")
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define-configuration/no-serialization stalwart-configuration
+  (stalwart
+   (string "stalwartlabs/stalwart:latest")
+   "")
+  (ports
+   (alist `(("443" . "443")
+            ("8080" . "8080")
+            ("25" . "25")
+            ("587" . "587")
+            ("465" . "465")
+            ("143" . "143")
+            ("993" . "993")
+            ("4190" . "4190")
+            ("110" . "110")
+            ("995" . "995")))
+   "")
+  (data-directory
+   (string "/var/lib/stalwart")
+   "")
+  (time-zone
+   (string "Asia/Shanghai")
+   "")
+  (log-file
+   (string "/var/log/stalwart.log")
+   "")
+  (auto-start?
+   (boolean #t)
+   ""))
+
+(define stalwart-activation
+  (match-record-lambda <stalwart-configuration>
+      (data-directory log-file)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "stalwart")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))))))
+
+(define stalwart-oci-service
+  (match-record-lambda <stalwart-configuration>
+      (stalwart auto-start? data-directory time-zone log-file ports)
+    (oci-extension
+     (containers
+      (list
+       (oci-container-configuration
+         (image stalwart)
+         (network "bridge")
+         (user "stalwart")
+         (group "docker")
+         (container-user (string-append (number->string (passwd:uid (getpwnam "stalwart"))) ":"
+                                        (number->string (group:gid (getgrnam "stalwart")))))
+         (ports ports)
+         (auto-start? auto-start?)
+         (provision "stalwart")
+         (requirement '(networking))
+         (log-file log-file)
+         (volumes
+          `((,data-directory . "/opt/stalwart")))))))))
+
+(define stalwart-service-type
+  (service-type
+    (name 'stalwart-web)
+    (extensions
+     (list (service-extension account-service-type
+                              (const %stalwart-accounts))
+           (service-extension log-rotation-service-type
+                              (compose list stalwart-configuration-log-file))
+           (service-extension activation-service-type
+                              stalwart-activation)
+           (service-extension oci-service-type
+                              stalwart-oci-service)))
+    (default-value (stalwart-configuration))
+    (description "运行Stalwart邮箱服务")))
