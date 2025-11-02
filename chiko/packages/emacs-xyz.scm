@@ -32,33 +32,6 @@
 		"0d9c7i3x4vfl7k4vi29zyrz1d2cx7kfdnir8slqdjbapyacrl4s0"))
               (file-name (git-file-name "emacs-dirvish" version))))))
 
-(define-public emacs-llm
-  (package
-    (name "emacs-llm")
-    (version "0.27.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-	      (url "https://github.com/ahyatt/llm")
-	      (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "15hsfsmaq5miqra6yrlpwnzniab9jhzrj9vg74f2879lp96fbzpy"))))
-    (build-system emacs-build-system)
-    (arguments
-     (list
-      #:tests? #f))
-    (propagated-inputs (list emacs-compat
-			     emacs-plz
-			     emacs-plz-event-source))
-    (home-page "https://github.com/ahyatt/llm")
-    (synopsis
-     "A package abstracting llm capabilities for emacs.")
-    (description
-     "This library provides an interface for interacting with Large Language Models (LLMs). It allows elisp code to use LLMs while also giving end-users the choice to select their preferred LLM. This is particularly beneficial when working with LLMs since various high-quality models exist, some of which have paid API access, while others are locally installed and free but offer medium quality. Applications using LLMs can utilize this library to ensure compatibility regardless of whether the user has a local LLM or is paying for API access.")
-    (license license:gpl3+)))
-
 (define-public emacs-triples
   (let ((commit "5e17182a5374a1656761bb26832fd21c6f168685")
 	(revision "0"))
