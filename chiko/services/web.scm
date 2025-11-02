@@ -19,7 +19,9 @@
   #:export (kavita-configuration
             kavita-service-type
             calibre-web-configuration
-            calibre-web-service-type))
+            calibre-web-service-type
+            stalwart-configuration
+            stalwart-service-type))
 
 (define %kavita-accounts
   (list (user-account
