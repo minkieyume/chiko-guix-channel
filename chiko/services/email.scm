@@ -145,6 +145,9 @@
    (boolean #t)
    ""))
 
+(define alist?
+  (list-of (pair string string)))
+
 (define docker-mailserver-accounts
   (match-record-lambda <docker-mailserver-configuration>
       (uid gid))
