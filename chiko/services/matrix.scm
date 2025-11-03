@@ -236,8 +236,6 @@
          (network "host")
          (user "synapse")
          (group "docker")
-         (container-user (string-append (number->string (passwd:uid (getpwnam "synapse"))) ":"
-                                        (number->string (group:gid (getgrnam "synapse")))))
          (auto-start? auto-start?)
          (provision "synapse")
          (requirement '(networking))
