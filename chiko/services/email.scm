@@ -105,22 +105,6 @@
     (default-value (stalwart-configuration))
     (description "运行Stalwart邮箱服务")))
 
-(define docker-mailserver-accounts
-  (match-record-lambda <docker-mailserver-configuration>
-      (uid gid))
-  (list (user-group
-          (name "mailserver")
-          (id gid)
-          (system? #t))
-        (user-account
-          (name "mailserver")
-          (group "mailserver")
-          (uid uid)
-          (system? #t)
-          (comment "Docker-Mailserver Mail Server")
-          (home-directory "/var/empty")
-          (shell (file-append shadow "/sbin/nologin")))))
-
 (define-configuration/no-serialization docker-mailserver-configuration
   (docker-mailserver
    (string "mailserver/docker-mailserver:latest")
@@ -160,6 +144,22 @@
   (auto-start?
    (boolean #t)
    ""))
+
+(define docker-mailserver-accounts
+  (match-record-lambda <docker-mailserver-configuration>
+      (uid gid))
+  (list (user-group
+          (name "mailserver")
+          (id gid)
+          (system? #t))
+        (user-account
+          (name "mailserver")
+          (group "mailserver")
+          (uid uid)
+          (system? #t)
+          (comment "Docker-Mailserver Mail Server")
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
 
 (define docker-mailserver-activation
   (match-record-lambda <docker-mailserver-configuration>
