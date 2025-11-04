@@ -19,6 +19,9 @@
   #:export (docker-mailserver-service-type
             docker-mailserver-configuration))
 
+(define alist?
+  (list-of (pair string string)))
+
 (define-configuration/no-serialization docker-mailserver-configuration
   (docker-mailserver
    (string "mailserver/docker-mailserver:latest")
@@ -58,9 +61,6 @@
   (auto-start?
    (boolean #t)
    ""))
-
-(define alist?
-  (list-of (pair string string)))
 
 (define docker-mailserver-accounts
   (match-record-lambda <docker-mailserver-configuration>
