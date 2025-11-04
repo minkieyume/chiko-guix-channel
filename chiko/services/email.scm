@@ -20,7 +20,7 @@
             docker-mailserver-configuration))
 
 (define alist?
-  (list-of pair))
+  (list-of pair?))
 
 (define-configuration/no-serialization docker-mailserver-configuration
   (docker-mailserver
