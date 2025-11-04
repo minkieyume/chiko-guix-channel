@@ -66,6 +66,9 @@
    "")
   (auto-start?
    (boolean #t)
+   "")
+  (extra-volumes
+   (alist `())
    ""))
 
 (define docker-mailserver-accounts
@@ -105,7 +108,8 @@
 
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
-      (docker-mailserver auto-start? data-directory time-zone log-file ports environment hostname gid uid ssl-cert-path)
+      (docker-mailserver auto-start? data-directory time-zone log-file
+       ports environment hostname gid uid ssl-cert-path extra-volumes)
     (oci-extension
      (containers
       (list
@@ -142,7 +146,8 @@
             (,(string-append data-directory "/log") . "/var/log/mail")
             ,(if (maybe-value-set? ssl-cert-path)
                  (cons ssl-cert-path "/certs:ro")
-                 (cons "/etc/letsencrypt" "/etc/letsencrypt"))))))))))
+                 (cons "/etc/letsencrypt" "/etc/letsencrypt"))
+            ,@extra-volumes))))))))
 
 (define docker-mailserver-service-type
   (service-type
