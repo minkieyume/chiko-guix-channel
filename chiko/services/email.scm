@@ -35,6 +35,9 @@
   (gid
    (number 5000)
    "")
+  (ssl-cert-path
+   string
+   "")
   (ports
    (alist `(("443" . "443")
             ("8080" . "8080")
@@ -100,7 +103,7 @@
 
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
-      (docker-mailserver auto-start? data-directory time-zone log-file ports environment hostname gid uid)
+      (docker-mailserver auto-start? data-directory time-zone log-file ports environment hostname gid uid ssl-cert-path)
     (oci-extension
      (containers
       (list
@@ -116,6 +119,7 @@
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
                         ("OVERRIDE_HOSTNAME" . ,hostname)
+                        ("PERMIT_DOCKER" . "network")
                         ("DMS_VMAIL_UID" . ,(number->string uid))
                         ("DMS_VMAIL_GID" . ,(number->string gid))
                         ,@environment))
@@ -123,7 +127,8 @@
           `((,(string-append data-directory "/config") . "/tmp/docker-mailserver/")
             (,(string-append data-directory "/maildata") . "/var/mail")
             (,(string-append data-directory "/mail-state") . "/var/mail-state")
-            (,(string-append data-directory "/log") . "/var/log/mail")))))))))
+            (,(string-append data-directory "/log") . "/var/log/mail")
+            (,ssl-cert-path . ,(string-append "/etc/letsencrypt/live/" hostname))))))))))
 
 (define docker-mailserver-service-type
   (service-type
