@@ -116,7 +116,7 @@
          (requirement '(networking))
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
-                        ("OVERRIDE_HOSTNAME" . hostname)
+                        ("OVERRIDE_HOSTNAME" . ,hostname)
                         ("DMS_VMAIL_UID" . ,(number->string uid))
                         ("DMS_VMAIL_GID" . ,(number->string gid))
                         ,@environment))
