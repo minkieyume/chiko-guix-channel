@@ -141,7 +141,7 @@
             (,(string-append data-directory "/mail-state") . "/var/mail-state")
             (,(string-append data-directory "/log") . "/var/log/mail")
             ,(if (maybe-value-set? ssl-cert-path)
-                 (cons ssl-cert-path "/certs")
+                 (cons ssl-cert-path "/certs:ro")
                  (cons "/etc/letsencrypt" "/etc/letsencrypt"))))))))))
 
 (define docker-mailserver-service-type
