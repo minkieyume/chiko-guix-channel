@@ -117,6 +117,7 @@
          (ports ports)
          (auto-start? auto-start?)
          (provision "mailserver")
+         (extra-arguments (list "--hostname" hostname))
          (requirement '(networking))
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
