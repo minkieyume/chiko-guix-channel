@@ -48,7 +48,8 @@
             ("995" . "995")))
    "")
   (environment
-   (alist `()))
+   (alist `())
+   "")
   (data-directory
    (string "/var/lib/docker-mailserver")
    "")
