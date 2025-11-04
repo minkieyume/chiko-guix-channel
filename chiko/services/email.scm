@@ -130,7 +130,7 @@
                                              ""))
                         ("SSL_KEY_PATH" . ,(if (maybe-value-set? ssl-cert-path)
                                             "/certs/privkey.pem"
-                                            ))
+                                            ""))
                         ("DMS_VMAIL_UID" . ,(number->string uid))
                         ("DMS_VMAIL_GID" . ,(number->string gid))
                         ,@environment))
