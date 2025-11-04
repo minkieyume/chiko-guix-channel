@@ -17,7 +17,9 @@
   #:use-module (gnu services containers)
   #:use-module (srfi srfi-13)
   #:export (stalwart-configuration
-            stalwart-service-type))
+            stalwart-service-type
+            docker-mailserver-service-type
+            docker-mailserver-configuration))
 
 
 (define %stalwart-accounts
