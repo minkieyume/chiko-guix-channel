@@ -65,19 +65,19 @@
 
 (define docker-mailserver-accounts
   (match-record-lambda <docker-mailserver-configuration>
-      (uid gid))
-  (list (user-group
-          (name "mailserver")
-          (id gid)
-          (system? #t))
-        (user-account
-          (name "mailserver")
-          (group "mailserver")
-          (uid uid)
-          (system? #t)
-          (comment "Docker-Mailserver Mail Server")
-          (home-directory "/var/empty")
-          (shell (file-append shadow "/sbin/nologin")))))
+      (uid gid)
+    (list (user-group
+            (name "mailserver")
+            (id gid)
+            (system? #t))
+          (user-account
+            (name "mailserver")
+            (group "mailserver")
+            (uid uid)
+            (system? #t)
+            (comment "Docker-Mailserver Mail Server")
+            (home-directory "/var/empty")
+            (shell (file-append shadow "/sbin/nologin"))))))
 
 (define docker-mailserver-activation
   (match-record-lambda <docker-mailserver-configuration>
