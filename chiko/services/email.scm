@@ -67,6 +67,9 @@
   (auto-start?
    (boolean #t)
    "")
+  (restart?
+   (boolean #t)
+   "")
   (use-rspamd?
    (boolean #f)
    "")
@@ -124,7 +127,7 @@
   (match-record-lambda <docker-mailserver-configuration>
       (docker-mailserver auto-start? data-directory time-zone log-file
        ports environment hostname gid uid ssl-cert-path extra-volumes
-       use-rspamd? rspamd-extenal-redis?)
+       use-rspamd? rspamd-extenal-redis? restart?)
     (oci-extension
      (containers
       (list
@@ -138,6 +141,7 @@
          (provision "mailserver")
          (extra-arguments (list "--hostname" hostname))
          (requirement '(networking))
+         (respawn? restart?)
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
                         ("OVERRIDE_HOSTNAME" . ,hostname)
