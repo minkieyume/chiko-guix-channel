@@ -22,6 +22,8 @@
 (define alist?
   (list-of pair?))
 
+(define-maybe string)
+
 (define-configuration/no-serialization docker-mailserver-configuration
   (docker-mailserver
    (string "mailserver/docker-mailserver:latest")
@@ -36,7 +38,7 @@
    (number 5000)
    "")
   (ssl-cert-path
-   string
+   maybe-string
    "")
   (ports
    (alist `(("443" . "443")
@@ -120,6 +122,11 @@
          (environment `(("TZ" . ,time-zone)
                         ("OVERRIDE_HOSTNAME" . ,hostname)
                         ("PERMIT_DOCKER" . "network")
+                        ("SSL_TYPE" . (if (maybe-value-set? ssl-cert-path)
+                                         "manual"
+                                         "letsencrypt"))
+                        ("SSL_CERT_PATH" . "/certs/fullchain.pem")
+                        ("SSL_KEY_PATH" . "/certs/privkey.pem")
                         ("DMS_VMAIL_UID" . ,(number->string uid))
                         ("DMS_VMAIL_GID" . ,(number->string gid))
                         ,@environment))
@@ -128,7 +135,7 @@
             (,(string-append data-directory "/maildata") . "/var/mail")
             (,(string-append data-directory "/mail-state") . "/var/mail-state")
             (,(string-append data-directory "/log") . "/var/log/mail")
-            (,ssl-cert-path . ,(string-append "/etc/letsencrypt/live/" hostname))))))))))
+            (,ssl-cert-path . "/certs:ro")))))))))
 
 (define docker-mailserver-service-type
   (service-type
