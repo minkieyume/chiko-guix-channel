@@ -100,7 +100,7 @@
 
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
-      (docker-mailserver auto-start? data-directory time-zone log-file ports environment hostname)
+      (docker-mailserver auto-start? data-directory time-zone log-file ports environment hostname gid uid)
     (oci-extension
      (containers
       (list
