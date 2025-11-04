@@ -114,11 +114,10 @@
                         (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
                     sub-dirs))
         (if #$rspamd-extenal-redis?
-            (begin
-              (symlink #$(plain-file "redis.conf" (string-append
-                                                   "servers = \"" #$redis-server "\";\n"
-                                                   "expand_keys = true;"))
-                       (string-append #$data-directory "/config/rspamd/local.d/redis.conf")))))))
+            (symlink #$(plain-file "redis.conf" (string-append
+                                                 "servers = \"" #$redis-server "\";\n"
+                                                 "expand_keys = true;"))
+                     (string-append #$data-directory "/config/rspamd/local.d/redis.conf"))))))
 
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
