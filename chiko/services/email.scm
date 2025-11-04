@@ -67,6 +67,14 @@
   (auto-start?
    (boolean #t)
    "")
+  (use-rspamd?
+   (boolean #f)
+   "")
+  (rspamd-extenal-redis?
+   (boolean #f)
+   "")
+  (redis-server
+   (string "localhost:6379"))
   (extra-volumes
    (alist `())
    ""))
@@ -89,7 +97,7 @@
 
 (define docker-mailserver-activation
   (match-record-lambda <docker-mailserver-configuration>
-      (data-directory log-file)
+      (data-directory log-file rspamd-extenal-redis? redis-server)
     #~(begin
         (use-modules (guix build utils))
         (let ((user (getpwnam "mailserver")))
@@ -104,12 +112,19 @@
                       (unless (file-exists? (string-append #$data-directory sub))
                         (mkdir-p (string-append #$data-directory sub))
                         (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
-                    sub-dirs)))))
+                    sub-dirs))
+        (if #$rspamd-extenal-redis?
+            (begin
+              (symlink #$(plain-file "redis.conf" (string-append
+                                                   "servers = \"" #$redis-server "\";\n"
+                                                   "expand_keys = true;"))
+                       (string-append #$data-directory "/config/rspamd/local.d/redis.conf")))))))
 
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
       (docker-mailserver auto-start? data-directory time-zone log-file
-       ports environment hostname gid uid ssl-cert-path extra-volumes)
+       ports environment hostname gid uid ssl-cert-path extra-volumes
+       use-rspamd? rspamd-extenal-redis?)
     (oci-extension
      (containers
       (list
@@ -138,6 +153,16 @@
                                             ""))
                         ("DMS_VMAIL_UID" . ,(number->string uid))
                         ("DMS_VMAIL_GID" . ,(number->string gid))
+                        ,@(if use-rspamd?
+                              `(("ENABLE_RSPAMD" . "1")
+			        ("ENABLE_OPENDKIM" . "0")
+			        ("ENABLE_OPENDMARC" . "0")
+			        ("ENABLE_POLICYD_SPF" . "0")
+			        ("ENABLE_AMAVIS" . "0")
+			        ("ENABLE_POSTGREY" . "0")
+			        ("RSPAMD_GREYLISTING" . "1")
+			        ("ENABLE_RSPAMD_REDIS" . "0"))
+                              '())
                         ,@environment))
          (volumes
           `((,(string-append data-directory "/config") . "/tmp/docker-mailserver/")
@@ -147,6 +172,10 @@
             ,(if (maybe-value-set? ssl-cert-path)
                  (cons ssl-cert-path "/certs:ro")
                  (cons "/etc/letsencrypt" "/etc/letsencrypt"))
+            ,@(if rspamd-extenal-redis?
+                  `(,(cons (string-append data-directory "/config/rspamd/local.d/redis.conf")
+                           "/etc/rspamd/local.d/redis.conf"))                  
+                  '())
             ,@extra-volumes))))))))
 
 (define docker-mailserver-service-type
