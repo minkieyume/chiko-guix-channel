@@ -116,7 +116,7 @@
                     sub-dirs))
         (if #$rspamd-extenal-redis?
             (symlink #$(plain-file "redis.conf" (string-append
-                                                 "servers = \"" #$redis-server "\";\n"
+                                                 "servers = \"" redis-server "\";\n"
                                                  "expand_keys = true;"))
                      (string-append #$data-directory "/config/rspamd/local.d/redis.conf"))))))
 
