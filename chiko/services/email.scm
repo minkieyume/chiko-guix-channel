@@ -107,8 +107,8 @@
        (oci-container-configuration
          (image docker-mailserver)
          (network "bridge")
-         (user "mailserver")
-         (group "docker")
+         (user "root")
+         (group "root")
          (ports ports)
          (auto-start? auto-start?)
          (provision "mailserver")
