@@ -74,7 +74,8 @@
    (boolean #f)
    "")
   (redis-server
-   (string "localhost:6379"))
+   (string "localhost:6379")
+   "")
   (extra-volumes
    (alist `())
    ""))
