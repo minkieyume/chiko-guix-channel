@@ -283,7 +283,7 @@
    (string "/var/log/etherpad.log")
    "")
   (db-type
-   (string "postgresql")
+   (string "postgres")
    "")
   (db-host
    (string "localhost")
@@ -368,6 +368,7 @@
                         ("DB_HOST" . ,db-host)
                         ("DB_PORT" . ,(number->string db-port))
                         ("DB_USER" . "etherpad")
+                        ("DB_NAME" . "etherpad")
                         ,@(if (maybe-value-set? db-pass)
                               `(("DB_PASS" . ,(maybe-value db-pass)))
                               '())
@@ -390,4 +391,4 @@
                               etherpad-activation)
            (service-extension oci-service-type
                               etherpad-oci-service)))
-    (description "运行Docker Mailserver邮箱服务")))
+    (description "运行Etherpad服务")))
