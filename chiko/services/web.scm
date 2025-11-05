@@ -348,7 +348,7 @@
 (define etherpad-oci-service
   (match-record-lambda <etherpad-configuration>
       (etherpad auto-start? data-directory time-zone log-file
-       ports environment gid uid restart? db-host db-type db-port db-pass)
+       port environment gid uid restart? db-host db-type db-port db-pass)
     (oci-extension
      (containers
       (list
@@ -357,7 +357,7 @@
          (network "bridge")
          (user "etherpad")
          (group "docker")
-         (ports ports)
+         (ports `((,(number->string port) . "9001")))
          (auto-start? auto-start?)
          (provision "etherpad")
          (requirement '(networking))
