@@ -265,3 +265,80 @@
                                         (string-append log-path "/synapse-generate-config.log")))))))
     (default-value (synapse-configuration))
     (description "运行 Synapse Matrix homeserver 服务")))
+
+(define-configuration/no-serialization matrix-dimension-configuration
+  (image
+   (string "turt2live/matrix-dimension:latest")
+   "Matrix Dimension 容器镜像")
+  (config-file
+   maybe-file-like
+   "Dimension 配置文件 production.yaml，如未指定则需手动生成")
+  (port
+   (number 8184)
+   "服务器监听端口")
+  (data-directory
+   (string "/var/lib/matrix-dimension")
+   "数据存储目录")
+  (auto-start?
+   (boolean #t)
+   "是否自动启动服务"))
+
+(define %matrix-dimension-accounts
+  (list (user-group
+          (name "matrix-dimension")
+          (system? #t))
+        (user-account
+          (name "matrix-dimension")
+          (group "matrix-dimension")
+          (system? #t)
+          (comment "Matrix Dimension user")
+          (home-directory "/var/lib/matrix-dimension")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define matrix-dimension-activation
+  (match-record-lambda <matrix-dimension-configuration>
+      (data-directory config-file)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "matrix-dimension"))
+              (group (getgrnam "matrix-dimension")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (group:gid group)))
+          (when #$(maybe-value-set? config-file)
+            (let ((dst (string-append #$data-directory "/config.yaml")))
+              (unless (file-exists? dst)
+                (install-file #$config-file dst)
+                (chown dst (passwd:uid user) (group:gid group))))))))
+
+(define matrix-dimension-oci-service
+  (match-record-lambda <matrix-dimension-configuration>
+      (image data-directory auto-start? port)
+    (oci-extension
+     (containers
+      (list
+       (oci-container-configuration
+         (image image)
+         (network "bridge")
+         (user "matrix-dimension")
+         (group "docker")
+         (auto-start? auto-start?)
+         (provision "matrix-dimension")
+         (requirement '(networking))
+         (log-file (string-append data-directory "/matrix-dimension.log"))
+         (ports '((,(number->string port) . "8184")))
+         (volumes
+          `((,data-directory . "/data")))))))))
+
+(define matrix-dimension-service-type
+  (service-type
+    (name 'matrix-dimension)
+    (extensions
+     (list (service-extension account-service-type
+                              (const %matrix-dimension-accounts))
+           (service-extension activation-service-type
+                              matrix-dimension-activation)
+           (service-extension oci-service-type
+                              matrix-dimension-oci-service)))
+    (default-value (matrix-dimension-configuration))
+    (description "运行 Matrix Dimension 服务（基于 Docker 容器）")))
