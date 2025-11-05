@@ -362,7 +362,7 @@
                                      (maybe-value-set? gid))
                                 (string-append uid ":" gid))
                                ((maybe-value-set? uid) uid)
-                               (else "etherpad")))
+                               (else "etherpad:etherpad")))
          (auto-start? auto-start?)
          (provision "etherpad")
          (requirement '(networking))
