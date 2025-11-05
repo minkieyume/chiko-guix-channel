@@ -323,7 +323,7 @@
             (let ((dst (string-append #$data-directory "/config.yaml")))
               (unless (file-exists? dst)
                 (install-file #$config-file dst)
-                (chown dst (passwd:uid user) (group:gid group))))))))
+                (chown dst (passwd:uid user) (group:gid group)))))))))
 
 (define matrix-dimension-oci-service
   (match-record-lambda <matrix-dimension-configuration>
@@ -342,7 +342,7 @@
          (log-file log-file)
 	 (ports `((,(number->string port) . "8184")))
          (volumes
-          `((,data-directory . "/data"))))))))))
+          `((,data-directory . "/data")))))))))
 
 (define matrix-dimension-service-type
   (service-type
