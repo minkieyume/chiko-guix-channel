@@ -268,8 +268,8 @@
 
 (define-configuration/no-serialization matrix-dimension-configuration
   (image
-   (string "turt2live/matrix-dimension:latest")
-   "Matrix Dimension 容器镜像")
+    (string "turt2live/matrix-dimension:latest")
+    "Matrix Dimension 容器镜像")
   (config-file
    maybe-file-like
    "Dimension 配置文件 production.yaml，如未指定则需手动生成")
@@ -279,9 +279,20 @@
   (data-directory
    (string "/var/lib/matrix-dimension")
    "数据存储目录")
+  (postgresql-password-file
+   (string "/var/lib/matrix/ppasu")
+   "PostgreSQL 密码文件路径，用于数据库连接")
   (auto-start?
    (boolean #t)
    "是否自动启动服务"))
+
+(define matrix-dimension-postgresql-role
+  (match-record-lambda <matrix-dimension-configuration>
+      (postgresql-password-file)
+    (list (postgresql-role
+            (name "matrix-dimension")
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
 
 (define %matrix-dimension-accounts
   (list (user-group
@@ -336,6 +347,8 @@
     (extensions
      (list (service-extension account-service-type
                               (const %matrix-dimension-accounts))
+           (service-extension postgresql-role-service-type
+                              matrix-dimension-postgresql-role)
            (service-extension activation-service-type
                               matrix-dimension-activation)
            (service-extension oci-service-type
