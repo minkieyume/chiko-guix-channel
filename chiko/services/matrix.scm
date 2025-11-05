@@ -339,10 +339,10 @@
          (auto-start? auto-start?)
          (provision "matrix-dimension")
          (requirement '(networking))
-         (log-file log-file))
-         (ports `((,(number->string port) . "8184")))
+         (log-file log-file)
+	 (ports `((,(number->string port) . "8184")))
          (volumes
-          `((,data-directory . "/data")))))))))
+          `((,data-directory . "/data"))))))))))
 
 (define matrix-dimension-service-type
   (service-type
