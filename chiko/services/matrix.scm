@@ -276,6 +276,9 @@
   (port
    (number 8184)
    "服务器监听端口")
+  (log-file
+   (string "/var/log/matrix-dimension.log")
+   "日志文件路径")
   (data-directory
    (string "/var/lib/matrix-dimension")
    "数据存储目录")
@@ -324,7 +327,7 @@
 
 (define matrix-dimension-oci-service
   (match-record-lambda <matrix-dimension-configuration>
-      (image data-directory auto-start? port)
+      (image data-directory auto-start? port log-file)
     (oci-extension
      (containers
       (list
@@ -336,8 +339,8 @@
          (auto-start? auto-start?)
          (provision "matrix-dimension")
          (requirement '(networking))
-         (log-file (string-append data-directory "/matrix-dimension.log"))
-         (ports '((,(number->string port) . "8184")))
+         (log-file log-file))
+         (ports `((,(number->string port) . "8184")))
          (volumes
           `((,data-directory . "/data")))))))))
 
