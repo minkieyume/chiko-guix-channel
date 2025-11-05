@@ -11,6 +11,7 @@
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
   #:use-module (gnu services configuration)
+  #:use-module (gnu services databases)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu services docker)
@@ -19,7 +20,9 @@
   #:export (kavita-configuration
             kavita-service-type
             calibre-web-configuration
-            calibre-web-service-type))
+            calibre-web-service-type
+            etherpad-configuration
+            etherpad-service-type))
 
 (define %kavita-accounts
   (list (user-account
@@ -247,3 +250,144 @@
            (service-extension oci-container-service-type
                               webdav-oci-container)))
     (description "运行WebDav服务服务")))
+
+(define alist?
+  (list-of pair?))
+
+(define-maybe number)
+(define-maybe string)
+
+(define-configuration/no-serialization etherpad-configuration
+  (etherpad
+   (string "etherpad/etherpad")
+   "")
+  (uid
+   maybe-number
+   "")
+  (gid
+   maybe-number
+   "")
+  (port
+   (number 9001)
+   "")
+  (environment
+   (alist `())
+   "")
+  (data-directory
+   (string "/var/lib/etherpad")
+   "")
+  (time-zone
+   (string "Asia/Shanghai")
+   "")
+  (log-file
+   (string "/var/log/etherpad.log")
+   "")
+  (db-type
+   (string "postgresql")
+   "")
+  (db-host
+   (string "localhost")
+   "")
+  (db-port
+   (number 5432)
+   "")
+  (db-pass
+   maybe-string
+   "")
+  (postgresql-password-file
+   (string "/var/lib/etherpad/ppasu")
+   "")
+  (auto-start?
+   (boolean #t)
+   "")
+  (restart?
+   (boolean #t)
+   ""))
+
+(define etherpad-postgresql-role
+  (match-record-lambda <etherpad-configuration>
+      (postgresql-password-file)
+    (list (postgresql-role
+            (name "etherpad")
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
+
+(define etherpad-accounts
+  (match-record-lambda <etherpad-configuration>
+      (uid gid)
+    (list (user-group
+            (name "etherpad")
+            (id (if (maybe-value-set? gid) gid #f))
+            (system? #t))
+          (user-account
+            (name "etherpad")
+            (group "etherpad")
+            (uid (if (maybe-value-set? uid) uid #f))
+            (system? #t)
+            (comment "Etherpad")
+            (home-directory "/var/empty")
+            (shell (file-append shadow "/sbin/nologin"))))))
+
+(define etherpad-activation
+  (match-record-lambda <etherpad-configuration>
+      (data-directory log-file)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "etherpad")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user))))
+        (let ((sub-dirs '("/plugins"
+                          "/var")))
+          (for-each (lambda (sub)
+                      (unless (file-exists? (string-append #$data-directory sub))
+                        (mkdir-p (string-append #$data-directory sub))
+                        (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
+                    sub-dirs)))))
+
+(define etherpad-oci-service
+  (match-record-lambda <etherpad-configuration>
+      (etherpad auto-start? data-directory time-zone log-file
+       ports environment gid uid restart? db-host db-type db-port db-pass)
+    (oci-extension
+     (containers
+      (list
+       (oci-container-configuration
+         (image etherpad)
+         (network "bridge")
+         (user "etherpad")
+         (group "docker")
+         (ports ports)
+         (auto-start? auto-start?)
+         (provision "etherpad")
+         (requirement '(networking))
+         (respawn? restart?)
+         (log-file log-file)
+         (environment `(("TZ" . ,time-zone)
+                        ("DB_TYPE" . ,db-type)
+                        ("DB_HOST" . ,db-host)
+                        ("DB_PORT" . ,(number->string db-port))
+                        ("DB_USER" . "etherpad")
+                        ,@(if (maybe-value-set? db-pass)
+                              `(("DB_PASS" . ,(maybe-value db-pass)))
+                              '())
+                        ,@environment))
+         (volumes
+          `((,(string-append data-directory "/plugins") . "/opt/etherpad-lite/src/plugin_packages")
+            (,(string-append data-directory "/var") . "/opt/etherpad-lite/var")))))))))
+
+(define etherpad-service-type
+  (service-type
+    (name 'etherpad)
+    (extensions
+     (list (service-extension account-service-type
+                              etherpad-accounts)
+           (service-extension postgresql-role-service-type
+                              etherpad-postgresql-role)
+           (service-extension log-rotation-service-type
+                              (compose list etherpad-configuration-log-file))
+           (service-extension activation-service-type
+                              etherpad-activation)
+           (service-extension oci-service-type
+                              etherpad-oci-service)))
+    (description "运行Docker Mailserver邮箱服务")))
