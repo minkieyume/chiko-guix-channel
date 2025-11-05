@@ -7,6 +7,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages file-systems)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages docker)
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu packages admin)
@@ -254,6 +255,9 @@
 (define alist?
   (list-of pair?))
 
+(define list-of-string?
+  (list-of string?))
+
 (define-maybe number)
 (define-maybe string)
 
@@ -272,6 +276,9 @@
    "")
   (environment
    (alist `())
+   "")
+  (plugins
+   (list-of-string '())
    "")
   (data-directory
    (string "/var/lib/etherpad")
@@ -330,7 +337,7 @@
 
 (define etherpad-activation
   (match-record-lambda <etherpad-configuration>
-      (data-directory log-file)
+      (data-directory log-file etherpad plugins)
     #~(begin
         (use-modules (guix build utils))
         (let ((user (getpwnam "etherpad")))
@@ -343,7 +350,19 @@
                       (unless (file-exists? (string-append #$data-directory sub))
                         (mkdir-p (string-append #$data-directory sub))
                         (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
-                    sub-dirs)))))
+                    sub-dirs))
+        (let ((docker-file #$(plain-file
+                              "dockerfile"
+                              (strring-join
+                               (list
+                                (string-append "FROM " etherpad)
+                                (string-append "RUN npm install "
+                                               (string-join plugins " "))
+                                "COPY settings.json.docker ./settings.json"
+                                "ENV NODE_ENV=production")
+                               "\n"))))
+          (system* #$(file-append docker-cli "/bin/docker") "build" "-t" "chiko/etherpad" "-f"
+                   docker-file ".")))))
 
 (define etherpad-oci-service
   (match-record-lambda <etherpad-configuration>
@@ -353,7 +372,7 @@
      (containers
       (list
        (oci-container-configuration
-         (image etherpad)
+         (image "chiko/etherpad")
          (network "bridge")
          (user "etherpad")
          (group "docker")
