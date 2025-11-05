@@ -353,7 +353,7 @@
                     sub-dirs))
         (let ((docker-file #$(plain-file
                               "dockerfile"
-                              (strring-join
+                              (string-join
                                (list
                                 (string-append "FROM " etherpad)
                                 (string-append "RUN npm install "
