@@ -350,18 +350,7 @@
                       (unless (file-exists? (string-append #$data-directory sub))
                         (mkdir-p (string-append #$data-directory sub))
                         (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
-                    sub-dirs))
-        (let ((docker-file #$(plain-file
-                              "dockerfile"
-                              (string-join
-                               (list
-                                (string-append "FROM " etherpad)
-                                "COPY settings.json.docker ./settings.json"
-                                "ENV NODE_ENV=production")
-                               "\n"))))
-          (system* #$(file-append docker-cli "/bin/docker") "build"
-                   "--build-arg" (string-append "ETHERPAD_PLUGINS=\"" (string-join plugins " ") "\"")
-                   "--tag" "chiko/etherpad" "-f" docker-file ".")))))
+                    sub-dirs)))))
 
 (define etherpad-oci-service
   (match-record-lambda <etherpad-configuration>
@@ -371,7 +360,7 @@
      (containers
       (list
        (oci-container-configuration
-         (image "chiko/etherpad")
+         (image etherpad)
          (network "bridge")
          (user "etherpad")
          (group "docker")
