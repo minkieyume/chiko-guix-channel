@@ -278,7 +278,7 @@
    (alist `())
    "")
   (plugins
-   (list-of-string '())
+   (list-of-string '("ep_comments_page" "ep_author_neat"))
    "")
   (data-directory
    (string "/var/lib/etherpad")
