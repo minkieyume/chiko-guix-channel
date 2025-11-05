@@ -286,7 +286,7 @@
    (string "postgres")
    "")
   (db-host
-   (string "host.docker.internal")
+   (string "172.17.0.1")
    "")
   (db-port
    (number 5432)
