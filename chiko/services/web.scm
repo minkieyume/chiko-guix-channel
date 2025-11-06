@@ -280,6 +280,9 @@
   (plugins
    (list-of-string '("ep_author_neat" "ep_markdown" "ep_headings2"))
    "")
+  (github-plugins
+   (list-of-string '())
+   "")
   (data-directory
    (string "/var/lib/etherpad")
    "")
@@ -337,7 +340,7 @@
 
 (define etherpad-activation
   (match-record-lambda <etherpad-configuration>
-      (data-directory log-file etherpad plugins)
+      (data-directory log-file etherpad)
     #~(begin
         (use-modules (guix build utils))
         (let ((user (getpwnam "etherpad")))
@@ -354,11 +357,47 @@
 
 (define etherpad-oci-service
   (match-record-lambda <etherpad-configuration>
-      (etherpad auto-start? data-directory time-zone log-file
+      (etherpad auto-start? data-directory time-zone log-file plugins github-plugins
        port environment gid uid restart? db-host db-type db-port db-pass)
     (oci-extension
      (containers
       (list
+       (oci-container-configuration
+         (image etherpad)
+         (network "host")
+         (user "etherpad-plugin-update")
+         (group "docker")
+         (auto-start? #t)
+         (provision "etherpad")
+         (container-user (cond ((and (maybe-value-set? uid)
+                                     (maybe-value-set? gid))
+                                (string-append (number->string uid) ":" (number->string gid)))
+                               ((maybe-value-set? uid) (string-append (number->string uid) ":etherpad"))
+                               ((maybe-value-set? gid) (string-append "etherpad:" (number->string gid)))
+                               (else "etherpad:etherpad")))
+         (command
+          `("pnpm" "run" "plugins" "i"
+            ,@plugins
+            ,@(if (null? github-plugins)
+                  '()
+                  (cons "--github" github-plugins))))
+         (requirement '(networking))
+         (respawn? #f)
+         (extra-arguments '("--rm"))
+         (log-file log-file)
+         (environment `(("TZ" . ,time-zone)
+                        ("DB_TYPE" . ,db-type)
+                        ("DB_HOST" . ,db-host)
+                        ("DB_PORT" . ,(number->string db-port))
+                        ("DB_USER" . "etherpad")
+                        ("DB_NAME" . "etherpad")
+                        ,@(if (maybe-value-set? db-pass)
+                              `(("DB_PASS" . ,(maybe-value db-pass)))
+                              '())
+                        ,@environment))
+         (volumes
+          `((,(string-append data-directory "/plugins") . "/opt/etherpad-lite/src/plugin_packages")
+            (,(string-append data-directory "/var") . "/opt/etherpad-lite/var"))))
        (oci-container-configuration
          (image etherpad)
          (network "bridge")
@@ -387,7 +426,8 @@
                               '())
                         ,@environment))
          (volumes
-          `((,(string-append data-directory "/var") . "/opt/etherpad-lite/var")))))))))
+          `((,(string-append data-directory "/plugins") . "/opt/etherpad-lite/src/plugin_packages")
+            (,(string-append data-directory "/var") . "/opt/etherpad-lite/var")))))))))
 
 (define etherpad-service-type
   (service-type
