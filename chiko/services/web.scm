@@ -387,8 +387,7 @@
                               '())
                         ,@environment))
          (volumes
-          `((,(string-append data-directory "/plugins") . "/opt/etherpad-lite/src/plugin_packages")
-            (,(string-append data-directory "/var") . "/opt/etherpad-lite/var")))))))))
+          `((,(string-append data-directory "/var") . "/opt/etherpad-lite/var")))))))))
 
 (define etherpad-service-type
   (service-type
