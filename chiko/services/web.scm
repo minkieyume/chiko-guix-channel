@@ -365,10 +365,10 @@
        (oci-container-configuration
          (image etherpad)
          (network "host")
-         (user "etherpad-plugin-update")
+         (user "etherpad")
          (group "docker")
          (auto-start? #t)
-         (provision "etherpad")
+         (provision "etherpad-plugins-update")
          (container-user (cond ((and (maybe-value-set? uid)
                                      (maybe-value-set? gid))
                                 (string-append (number->string uid) ":" (number->string gid)))
