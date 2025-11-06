@@ -411,7 +411,7 @@
                                (else "etherpad:etherpad")))
          (auto-start? auto-start?)
          (provision "etherpad")
-         (requirement '(networking etherpad-plugins-update dockerd))
+         (requirement '(networking dockerd))
          (respawn? restart?)
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
