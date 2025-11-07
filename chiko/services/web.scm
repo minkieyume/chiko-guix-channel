@@ -562,15 +562,15 @@
          (respawn? restart?)
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
-                        ("CMD_DB_HOST" . ,db-host)
-                        ("CMD_DB_PORT" . ,(number->string db-port))
-                        ("CMD_DB_USER" . "hedgedoc")
-                        ("CMD_DB_NAME" . "hedgedoc")
-                        ("CMD_DB_DIALECT" . ,db-type)
                         ("CMD_DOMAIN" . ,hostname)
-                        ,@(if (maybe-value-set? db-pass)
-                              `(("CMD_DB_PASS" . ,db-pass))
-                              '())
+                        ("CMD_URL_ADDPORT" . "false")
+                        ("CMD_DB_URL" . ,(string-append "postgres://hedgedoc:"
+                                                        (if (maybe-value-set? db-pass)
+                                                            db-pass
+                                                            "")
+                                                        "@" db-host
+                                                        ":" (number->string db-port)
+                                                        "/hedgedoc"))
                         ,@environment))
          (volumes
           `((,(string-append data-directory "/uploads") . "/uploads")))))))))
