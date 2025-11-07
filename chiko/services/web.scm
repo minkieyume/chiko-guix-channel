@@ -542,7 +542,7 @@
      (containers
       (list
        (oci-container-configuration
-         (image hedgedoc)
+         (image image)
          (network "bridge")
          (user "hedgedoc")
          (group "docker")
