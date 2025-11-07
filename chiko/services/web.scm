@@ -546,7 +546,7 @@
          (network "bridge")
          (user "hedgedoc")
          (group "docker")
-         (ports `((,(number->string port) . "")))
+         (ports `((,(number->string port) . "3000")))
          (container-user (cond ((and (maybe-value-set? uid)
                                      (maybe-value-set? gid))
                                 (string-append (number->string uid) ":" (number->string gid)))
