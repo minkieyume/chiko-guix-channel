@@ -443,3 +443,145 @@
            (service-extension oci-service-type
                               etherpad-oci-service)))
     (description "运行Etherpad服务")))
+
+(define-configuration/no-serialization hedgedoc-configuration
+  (image
+   (string "linuxserver/hedgedoc")
+   "")
+  (uid
+   maybe-number
+   "")
+  (gid
+   maybe-number
+   "")
+  (port
+   (number 3000)
+   "")
+  (db-host
+   (string "localhost")
+   "")
+  (db-port
+   (number 5432)
+   "")
+  (db-pass
+   maybe-string
+   "")
+  (hostname
+   string
+   "")
+  (environment
+   (alist `())
+   "")
+  (data-directory
+   (string "/var/lib/hedgedoc")
+   "")
+  (time-zone
+   (string "Asia/Shanghai")
+   "")
+  (log-file
+   (string "/var/log/hedgedoc.log")
+   "")
+  (postgresql-password-file
+   (string "/var/lib/hedgedoc/ppasu")
+   "")
+  (auto-start?
+   (boolean #t)
+   "")
+  (restart?
+   (boolean #t)
+   ""))
+
+(define hedgedoc-postgresql-role
+  (match-record-lambda <hedgedoc-configuration>
+      (postgresql-password-file)
+    (list (postgresql-role
+            (name "hedgedoc")
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
+
+(define hedgedoc-accounts
+  (match-record-lambda <hedgedoc-configuration>
+      (uid gid)
+    (list (user-group
+            (name "hedgedoc")
+            (id (if (maybe-value-set? gid) gid #f))
+            (system? #t))
+          (user-account
+            (name "hedgedoc")
+            (group "hedgedoc")
+            (uid (if (maybe-value-set? uid) uid #f))
+            (system? #t)
+            (comment "Hedgedoc")
+            (home-directory "/var/empty")
+            (shell (file-append shadow "/sbin/nologin"))))))
+
+(define hedgedoc-activation
+  (match-record-lambda <hedgedoc-configuration>
+      (data-directory)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "hedgedoc")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user))))
+        (let ((sub-dirs '("/uploads"
+                          "/config")))
+          (for-each (lambda (sub)
+                      (unless (file-exists? (string-append #$data-directory sub))
+                        (mkdir-p (string-append #$data-directory sub))
+                        (chown (string-append #$data-directory sub) (passwd:uid user) (passwd:gid user))))
+                    sub-dirs)))))
+
+(define hedgedoc-oci-service
+  (match-record-lambda <hedgedoc-configuration>
+      (image auto-start? data-directory time-zone log-file port environment gid uid restart?
+       db-host db-port db-pass hostname)
+    (oci-extension
+     (containers
+      (list
+       (oci-container-configuration
+         (image hedgedoc)
+         (network "bridge")
+         (user "hedgedoc")
+         (group "docker")
+         (ports `((,(number->string port) . "")))
+         (container-user (cond ((and (maybe-value-set? uid)
+                                     (maybe-value-set? gid))
+                                (string-append (number->string uid) ":" (number->string gid)))
+                               ((maybe-value-set? uid) (string-append (number->string uid) ":hedgedoc"))
+                               ((maybe-value-set? gid) (string-append "hedgedoc:" (number->string gid)))
+                               (else "hedgedoc:hedgedoc")))
+         (auto-start? auto-start?)
+         (provision "hedgedoc")
+         (requirement '(networking dockerd))
+         (respawn? restart?)
+         (log-file log-file)
+         (environment `(("TZ" . ,time-zone)
+                        ("DB_HOST" . ,db-host)
+                        ("DB_PORT" . ,(number->string db-port))
+                        ("DB_USER" . "hedgedoc")
+                        ("DB_NAME" . "hedgedoc")
+                        ("CMD_DOMAIN" . ,hostname)
+                        ,@(if (maybe-value-set? db-pass)
+                              `(("DB_PASS" . ,(maybe-value db-pass)))
+                              '())
+                        ,@environment))
+         (volumes
+          `((,(string-append data-directory "/uploads") . "/hedgedoc/public/uploads")
+            (,(string-append data-directory "/config") . "/config")))))))))
+
+(define hedgedoc-service-type
+  (service-type
+    (name 'hedgedoc)
+    (extensions
+     (list (service-extension account-service-type
+                              hedgedoc-accounts)
+           (service-extension postgresql-role-service-type
+                              hedgedoc-postgresql-role)
+           (service-extension log-rotation-service-type
+                              (compose list hedgedoc-configuration-log-file))
+           (service-extension activation-service-type
+                              hedgedoc-activation)
+           (service-extension oci-service-type
+                              hedgedoc-oci-service)))
+    (description "运行Hedgedoc服务")))
