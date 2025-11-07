@@ -18,6 +18,7 @@
   #:use-module (gnu services docker)
   #:use-module (gnu services containers)
   #:use-module (srfi srfi-13)
+  #:use-module (web uri)
   #:export (kavita-configuration
             kavita-service-type
             calibre-web-configuration
@@ -566,7 +567,7 @@
                         ("CMD_URL_ADDPORT" . "false")
                         ("CMD_DB_URL" . ,(string-append "postgres://hedgedoc:"
                                                         (if (maybe-value-set? db-pass)
-                                                            db-pass
+                                                            (uri-encode db-pass)
                                                             "")
                                                         "@" db-host
                                                         ":" (number->string db-port)
