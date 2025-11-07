@@ -563,6 +563,7 @@
                         ("DB_PORT" . ,(number->string db-port))
                         ("DB_USER" . "hedgedoc")
                         ("DB_NAME" . "hedgedoc")
+                        ("CMD_DB_DIALECT" . "postgres")
                         ("CMD_DOMAIN" . ,hostname)
                         ,@(if (maybe-value-set? db-pass)
                               `(("DB_PASS" . ,db-pass))
