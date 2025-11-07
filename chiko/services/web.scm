@@ -23,7 +23,9 @@
             calibre-web-configuration
             calibre-web-service-type
             etherpad-configuration
-            etherpad-service-type))
+            etherpad-service-type
+            hedgedoc-configuration
+            hedgedoc-service-type))
 
 (define %kavita-accounts
   (list (user-account
@@ -482,7 +484,7 @@
    (string "/var/log/hedgedoc.log")
    "")
   (postgresql-password-file
-   (string "/var/lib/hedgedoc/ppasu")
+   string
    "")
   (auto-start?
    (boolean #t)
