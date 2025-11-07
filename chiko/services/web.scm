@@ -448,7 +448,7 @@
 
 (define-configuration/no-serialization hedgedoc-configuration
   (image
-   (string "linuxserver/hedgedoc")
+   (string "quay.io/hedgedoc/hedgedoc:latest")
    "")
   (uid
    (number 991)
@@ -552,31 +552,28 @@
          (ports `((,(number->string port) . "3000")))
          (auto-start? auto-start?)
          (provision "hedgedoc")
+         (container-user (cond ((and (maybe-value-set? uid)
+                                     (maybe-value-set? gid))
+                                (string-append (number->string uid) ":" (number->string gid)))
+                               ((maybe-value-set? uid) (string-append (number->string uid) ":911"))
+                               ((maybe-value-set? gid) (string-append "911:" (number->string gid)))
+                               (else "911:911")))
          (requirement '(networking dockerd))
          (respawn? restart?)
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
-                        ("PUID" . ,(if (maybe-value-set? uid)
-                                        (number->string (maybe-value uid))
-                                        "911"))
-                        ("PGID" . ,(if (maybe-value-set? gid)
-                                        (number->string (maybe-value gid))
-                                        "911"))
                         ("CMD_DB_HOST" . ,db-host)
-                        ("DB_PORT" . ,(number->string db-port))
-                        ("DB_NAME" . "hedgedoc")
-                        ("DB_USER" . "hedgedoc")
                         ("CMD_DB_PORT" . ,(number->string db-port))
                         ("CMD_DB_USER" . "hedgedoc")
                         ("CMD_DB_NAME" . "hedgedoc")
                         ("CMD_DB_DIALECT" . ,db-type)
                         ("CMD_DOMAIN" . ,hostname)
                         ,@(if (maybe-value-set? db-pass)
-                              `(("DB_PASS" . ,db-pass))
+                              `(("CMD_DB_PASS" . ,db-pass))
                               '())
                         ,@environment))
          (volumes
-          `((,(string-append data-directory "/config") . "/config")))))))))
+          `((,(string-append data-directory "/uploads") . "/uploads")))))))))
 
 (define hedgedoc-service-type
   (service-type
