@@ -575,7 +575,7 @@
                               '())
                         ,@environment))
          (volumes
-          `((,(string-append data-directory "/uploads") . "/app/hedgedoc/public/uploads/")
+          `((,(string-append data-directory "/uploads") . "/config/uploads")
             (,(string-append data-directory "/config") . "/config")))))))))
 
 (define hedgedoc-service-type
