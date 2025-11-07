@@ -451,10 +451,10 @@
    (string "linuxserver/hedgedoc")
    "")
   (uid
-   maybe-number
+   (number 991)
    "")
   (gid
-   maybe-number
+   (number 991)
    "")
   (port
    (number 3000)
