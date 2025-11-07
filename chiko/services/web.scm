@@ -460,7 +460,7 @@
    (number 3000)
    "")
   (db-host
-   (string "172.0.0.1")
+   (string "172.17.0.1")
    "")
   (db-port
    (number 5432)
