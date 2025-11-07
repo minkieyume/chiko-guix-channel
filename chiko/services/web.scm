@@ -459,6 +459,9 @@
   (port
    (number 3000)
    "")
+  (db-type
+   (string "postgres")
+   "")
   (db-host
    (string "172.17.0.1")
    "")
@@ -537,7 +540,7 @@
 (define hedgedoc-oci-service
   (match-record-lambda <hedgedoc-configuration>
       (image auto-start? data-directory time-zone log-file port environment gid uid restart?
-       db-host db-port db-pass hostname)
+       db-host db-port db-pass hostname db-type)
     (oci-extension
      (containers
       (list
@@ -563,7 +566,7 @@
                         ("DB_PORT" . ,(number->string db-port))
                         ("DB_USER" . "hedgedoc")
                         ("DB_NAME" . "hedgedoc")
-                        ("CMD_DB_DIALECT" . "postgres")
+                        ("CMD_DB_DIALECT" . ,db-type)
                         ("CMD_DOMAIN" . ,hostname)
                         ,@(if (maybe-value-set? db-pass)
                               `(("DB_PASS" . ,db-pass))
