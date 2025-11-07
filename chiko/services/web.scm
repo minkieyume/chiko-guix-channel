@@ -460,7 +460,7 @@
    (number 3000)
    "")
   (db-host
-   (string "localhost")
+   (string "172.0.0.1")
    "")
   (db-port
    (number 5432)
@@ -565,7 +565,7 @@
                         ("DB_NAME" . "hedgedoc")
                         ("CMD_DOMAIN" . ,hostname)
                         ,@(if (maybe-value-set? db-pass)
-                              `(("DB_PASS" . ,(maybe-value db-pass)))
+                              `(("DB_PASS" . ,db-pass))
                               '())
                         ,@environment))
          (volumes
