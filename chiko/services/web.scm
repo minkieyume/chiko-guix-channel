@@ -544,8 +544,6 @@
        (oci-container-configuration
          (image image)
          (network "bridge")
-         (user "hedgedoc")
-         (group "docker")
          (ports `((,(number->string port) . "3000")))
          (container-user (cond ((and (maybe-value-set? uid)
                                      (maybe-value-set? gid))
