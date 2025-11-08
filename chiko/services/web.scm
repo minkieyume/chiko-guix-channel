@@ -26,7 +26,9 @@
             etherpad-configuration
             etherpad-service-type
             hedgedoc-configuration
-            hedgedoc-service-type))
+            hedgedoc-service-type
+            authentik-configuration
+            authentik-service-type))
 
 (define %kavita-accounts
   (list (user-account
@@ -591,3 +593,172 @@
            (service-extension oci-service-type
                               hedgedoc-oci-service)))
     (description "运行Hedgedoc服务")))
+
+;; 下面是AI写的，还没测试。
+(define %authentik-accounts
+  (list (user-account
+          (name "authentik")
+          (group "docker")
+          (system? #t)
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define-configuration/no-serialization authentik-configuration
+  (image
+   (string "ghcr.io/goauthentik/server")
+   "Authentik Docker 镜像名称")
+  (tag
+   (string "2025.10.1")
+   "Authentik 镜像标签版本")
+  (http-port
+   (number 9000)
+   "HTTP 端口")
+  (https-port
+   (number 9443)
+   "HTTPS 端口")
+  (db-host
+   (string "172.17.0.1")
+   "PostgreSQL 数据库主机地址")
+  (db-port
+   (number 5432)
+   "PostgreSQL 数据库端口")
+  (db-name
+   (string "authentik")
+   "PostgreSQL 数据库名称")
+  (db-user
+   (string "authentik")
+   "PostgreSQL 数据库用户名")
+  (db-password
+   maybe-string
+   "PostgreSQL 数据库密码")
+  (postgresql-password-file
+   string
+   "PostgreSQL 密码文件路径")
+  (secret-key
+   string
+   "Authentik 密钥，用于加密会话等")
+  (data-directory
+   (string "/var/lib/authentik")
+   "数据存储目录")
+  (time-zone
+   (string "Asia/Shanghai")
+   "时区设置")
+  (log-file
+   (string "/var/log/authentik.log")
+   "日志文件路径")
+  (environment
+   (alist '())
+   "额外的环境变量，格式为关联列表")
+  (auto-start?
+   (boolean #t)
+   "是否自动启动服务")
+  (restart?
+   (boolean #t)
+   "容器是否自动重启"))
+
+(define authentik-postgresql-role
+  (match-record-lambda <authentik-configuration>
+      (db-name db-user postgresql-password-file)
+    (list (postgresql-role
+            (name db-user)
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
+
+(define authentik-activation
+  (match-record-lambda <authentik-configuration>
+      (data-directory)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "authentik")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))
+          (let ((sub-dirs '("/media"
+                            "/custom-templates"
+                            "/certs")))
+            (for-each (lambda (sub)
+                        (let ((dir-path (string-append #$data-directory sub)))
+                          (unless (file-exists? dir-path)
+                            (mkdir-p dir-path)
+                            (chown dir-path (passwd:uid user) (passwd:gid user)))))
+                      sub-dirs))))))
+
+(define authentik-oci-service
+  (match-record-lambda <authentik-configuration>
+      (image tag http-port https-port db-host db-port db-name db-user db-password
+       secret-key data-directory time-zone log-file environment auto-start? restart?)
+    (oci-extension
+     (containers
+      (list
+       ;; Server 容器
+       (oci-container-configuration
+         (image (string-append image ":" tag))
+         (network "bridge")
+         (user "authentik")
+         (group "docker")
+         (ports `((,(number->string http-port) . "9000")
+                  (,(number->string https-port) . "9443")))
+         (auto-start? auto-start?)
+         (provision "authentik-server")
+         (requirement '(networking dockerd))
+         (respawn? restart?)
+         (log-file log-file)
+         (command '("server"))
+         (environment `(("TZ" . ,time-zone)
+                        ("AUTHENTIK_SECRET_KEY" . ,secret-key)
+                        ("AUTHENTIK_POSTGRESQL__HOST" . ,db-host)
+                        ("AUTHENTIK_POSTGRESQL__PORT" . ,(number->string db-port))
+                        ("AUTHENTIK_POSTGRESQL__NAME" . ,db-name)
+                        ("AUTHENTIK_POSTGRESQL__USER" . ,db-user)
+                        ,@(if (maybe-value-set? db-password)
+                              `(("AUTHENTIK_POSTGRESQL__PASSWORD" . ,(maybe-value db-password)))
+                              '())
+                        ,@environment))
+         (volumes
+          `((,(string-append data-directory "/media") . "/media")
+            (,(string-append data-directory "/custom-templates") . "/templates"))))
+       
+       ;; Worker 容器
+       (oci-container-configuration
+         (image (string-append image ":" tag))
+         (network "bridge")
+         (user "authentik")
+         (group "docker")
+         (container-user "root")
+         (auto-start? auto-start?)
+         (provision "authentik-worker")
+         (requirement '(networking dockerd authentik-server))
+         (respawn? restart?)
+         (log-file log-file)
+         (command '("worker"))
+         (environment `(("TZ" . ,time-zone)
+                        ("AUTHENTIK_SECRET_KEY" . ,secret-key)
+                        ("AUTHENTIK_POSTGRESQL__HOST" . ,db-host)
+                        ("AUTHENTIK_POSTGRESQL__PORT" . ,(number->string db-port))
+                        ("AUTHENTIK_POSTGRESQL__NAME" . ,db-name)
+                        ("AUTHENTIK_POSTGRESQL__USER" . ,db-user)
+                        ,@(if (maybe-value-set? db-password)
+                              `(("AUTHENTIK_POSTGRESQL__PASSWORD" . ,(maybe-value db-password)))
+                              '())
+                        ,@environment))
+         (volumes
+          `(("/var/run/docker.sock" . "/var/run/docker.sock")
+            (,(string-append data-directory "/media") . "/media")
+            (,(string-append data-directory "/certs") . "/certs")
+            (,(string-append data-directory "/custom-templates") . "/templates")))))))))
+
+(define authentik-service-type
+  (service-type
+    (name 'authentik)
+    (extensions
+     (list (service-extension account-service-type
+                              (const %authentik-accounts))
+           (service-extension postgresql-role-service-type
+                              authentik-postgresql-role)
+           (service-extension log-rotation-service-type
+                              (compose list authentik-configuration-log-file))
+           (service-extension activation-service-type
+                              authentik-activation)
+           (service-extension oci-service-type
+                              authentik-oci-service)))
+    (description "运行 Authentik 认证服务，包括 server 和 worker 两个容器")))
