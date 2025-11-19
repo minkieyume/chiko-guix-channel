@@ -29,7 +29,7 @@
   (reverse (cdr (reverse lst))))
 
 (define (replace-ip-end s new-end)
-  (string-join (append (pop-last (string-split s ".")) (list new-end)) "."))
+  (string-join (append (pop-last (string-split s #\.)) (list new-end)) "."))
 
 (define-maybe string)
 
