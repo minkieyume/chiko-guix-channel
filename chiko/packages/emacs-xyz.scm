@@ -370,4 +370,4 @@ Key features include:
       (license license:gpl3+))))
 
 ;; 测试用：
-(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama emacs-elisa emacs-forge emacs-aider)
+(list emacs-dirvish-unstable emacs-llm emacs-triples emacs-ekg emacs-copilot emacs-codex emacs-claude-code-ide emacs-company-box-chiko emacs-copilot-chat emacs-vecdb emacs-ellama emacs-elisa emacs-aider)

@@ -145,7 +145,6 @@
          (log-file log-file)
          (environment `(("TZ" . ,time-zone)
                         ("OVERRIDE_HOSTNAME" . ,hostname)
-                        ("PERMIT_DOCKER" . "network")
                         ("SSL_TYPE" . ,(if (maybe-value-set? ssl-cert-path)
                                          "manual"
                                          "letsencrypt"))
