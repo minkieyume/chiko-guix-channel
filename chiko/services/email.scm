@@ -137,7 +137,7 @@
 
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
-      (docker-mailserver auto-start? data-directory time-zone log-file
+      (docker-mailserver auto-start? data-directory time-zone log-file oci-ip
        ports environment hostname gid uid ssl-cert-path extra-volumes
        use-rspamd? rspamd-extenal-redis? restart?)
     (oci-extension
