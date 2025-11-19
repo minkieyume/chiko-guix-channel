@@ -22,6 +22,15 @@
 (define alist?
   (list-of pair?))
 
+(define (pop-last-string s)
+  (substring s 0 (- (string-length s) 1)))
+
+(define (pop-last lst)
+  (reverse (cdr (reverse lst))))
+
+(define (replace-ip-end s new-end)
+  (string-join (append (pop-last (string-split s ".")) (list new-end)) "."))
+
 (define-maybe string)
 
 (define-configuration/no-serialization docker-mailserver-configuration
@@ -64,6 +73,9 @@
   (log-file
    (string "/var/log/docker-mailserver.log")
    "")
+  (oci-ip
+   (string "172.20.0.5")
+   "在oci容器中的ip地址。")
   (auto-start?
    (boolean #t)
    "")
@@ -129,11 +141,19 @@
        ports environment hostname gid uid ssl-cert-path extra-volumes
        use-rspamd? rspamd-extenal-redis? restart?)
     (oci-extension
+     (networks
+      (list
+       (oci-network-configuration
+        (name "mailserver")
+        (driver "bridge")
+        (subnet (string-append (replace-ip-end oci-ip "0") "/24"))
+        (gateway (replace-ip-end oci-ip "1"))
+        (ip-range (string-append oci-ip "/32")))))
      (containers
       (list
        (oci-container-configuration
          (image docker-mailserver)
-         (network "bridge")
+         (network "mailserver")
          (user "mailserver")
          (group "docker")
          (ports ports)
@@ -146,14 +166,14 @@
          (environment `(("TZ" . ,time-zone)
                         ("OVERRIDE_HOSTNAME" . ,hostname)
                         ("SSL_TYPE" . ,(if (maybe-value-set? ssl-cert-path)
-                                         "manual"
-                                         "letsencrypt"))
+                                           "manual"
+                                           "letsencrypt"))
                         ("SSL_CERT_PATH" . ,(if (maybe-value-set? ssl-cert-path)
-                                             "/certs/fullchain.pem"
-                                             ""))
+                                                "/certs/fullchain.pem"
+                                                ""))
                         ("SSL_KEY_PATH" . ,(if (maybe-value-set? ssl-cert-path)
-                                            "/certs/privkey.pem"
-                                            ""))
+                                               "/certs/privkey.pem"
+                                               ""))
                         ("DMS_VMAIL_UID" . ,(number->string uid))
                         ("DMS_VMAIL_GID" . ,(number->string gid))
                         ,@(if use-rspamd?
