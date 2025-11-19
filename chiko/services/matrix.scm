@@ -36,10 +36,10 @@
    (number 8008)
    "服务器监听端口")
   (uid
-   (number 5018)
+   (number 991)
    "")
   (gid
-   (number 5018)
+   (number 991)
    "")
   (config-file
    maybe-file-like
