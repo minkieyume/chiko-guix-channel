@@ -79,6 +79,9 @@
   (auto-start?
    (boolean #t)
    "")
+  (host-mode?
+   (boolean #f)
+   "")
   (restart?
    (boolean #t)
    "")
@@ -138,7 +141,7 @@
 (define docker-mailserver-oci-service
   (match-record-lambda <docker-mailserver-configuration>
       (docker-mailserver auto-start? data-directory time-zone log-file oci-ip
-       ports environment hostname gid uid ssl-cert-path extra-volumes
+       ports environment hostname gid uid ssl-cert-path extra-volumes host-mode?
        use-rspamd? rspamd-extenal-redis? restart?)
     (oci-extension
      (networks
@@ -153,10 +156,10 @@
       (list
        (oci-container-configuration
          (image docker-mailserver)
-         (network "mailserver")
+         (network (if host-mode? "host" "mailserver"))
          (user "mailserver")
          (group "docker")
-         (ports ports)
+         (ports (if host-mode? '() ports))
          (auto-start? auto-start?)
          (provision "mailserver")
          (extra-arguments (list "--hostname" hostname))
