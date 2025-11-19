@@ -122,7 +122,7 @@
 (define synapse-oci-service
   (match-record-lambda <synapse-configuration>
       (synapse server-name config-file data-directory log-path
-       report-stats? auto-start? time-zone host-port uid gid)
+               report-stats? auto-start? time-zone host-port uid gid)
     (oci-extension
      (containers
       (list
