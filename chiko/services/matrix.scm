@@ -159,7 +159,7 @@
          (group "docker")
          (auto-start? auto-start?)
          (provision "synapse")
-         (requirement '(networking))
+         (requirement '(networking postgresql))
          (log-file (string-append log-path "/synapse.log"))
          (command
           '("run" "-m" "synapse.app.homeserver" "--config-path" "/config/homeserver.yaml"))
