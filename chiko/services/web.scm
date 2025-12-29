@@ -834,7 +834,7 @@
 
 (define immich-oci-service
   (match-record-lambda <immich-configuration>
-      (image http-port port db-host db-port db-name db-user db-password
+      (image port db-host db-port db-name db-user db-password
        data-directory time-zone log-file environment auto-start? restart?)
     (oci-extension
      (containers
