@@ -790,7 +790,7 @@
    (string "immich")
    "PostgreSQL 数据库用户名")
   (db-password
-   maybe-string
+   string
    "PostgreSQL 数据库密码")
   (postgresql-password-file
    string
