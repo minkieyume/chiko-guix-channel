@@ -594,7 +594,6 @@
                               hedgedoc-oci-service)))
     (description "运行Hedgedoc服务")))
 
-;; 下面是AI写的，还没测试。
 (define %authentik-accounts
   (list (user-account
           (name "authentik")
@@ -762,3 +761,119 @@
            (service-extension oci-service-type
                               authentik-oci-service)))
     (description "运行 Authentik 认证服务，包括 server 和 worker 两个容器")))
+
+(define %immich-accounts
+  (list (user-account
+          (name "immich")
+          (group "docker")
+          (system? #t)
+          (home-directory "/var/empty")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define-configuration/no-serialization immich-configuration
+  (image
+   (string "ghcr.io/immich-app/immich-server")
+   "Immich Docker 镜像")
+  (port
+   (number 2283)
+   "HTTP 端口")
+  (db-host
+   (string "172.17.0.1")
+   "PostgreSQL 数据库主机地址")
+  (db-port
+   (number 5432)
+   "PostgreSQL 数据库端口")
+  (db-name
+   (string "immich")
+   "PostgreSQL 数据库名称")
+  (db-user
+   (string "immich")
+   "PostgreSQL 数据库用户名")
+  (db-password
+   maybe-string
+   "PostgreSQL 数据库密码")
+  (postgresql-password-file
+   string
+   "PostgreSQL 密码文件路径")
+  (data-directory
+   (string "/var/lib/immich")
+   "数据存储目录")
+  (time-zone
+   (string "Asia/Shanghai")
+   "时区设置")
+  (log-file
+   (string "/var/log/immich.log")
+   "日志文件路径")
+  (environment
+   (alist '())
+   "额外的环境变量，格式为关联列表")
+  (auto-start?
+   (boolean #t)
+   "是否自动启动服务")
+  (restart?
+   (boolean #t)
+   "容器是否自动重启"))
+
+(define immich-postgresql-role
+  (match-record-lambda <immich-configuration>
+      (db-name db-user postgresql-password-file)
+    (list (postgresql-role
+            (name db-user)
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
+
+(define immich-activation
+  (match-record-lambda <immich-configuration>
+      (data-directory)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "immich")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))))))
+
+(define immich-oci-service
+  (match-record-lambda <immich-configuration>
+      (image http-port port db-host db-port db-name db-user db-password
+       data-directory time-zone log-file environment auto-start? restart?)
+    (oci-extension
+     (containers
+      (list
+       ;; Server 容器
+       (oci-container-configuration
+         (image (string-append image ":" tag))
+         (network "bridge")
+         (user "immich")
+         (group "docker")
+         (ports `((,(number->string port) . "2283")))
+         (auto-start? auto-start?)
+         (provision "immich")
+         (requirement '(networking dockerd postgresql))
+         (respawn? restart?)
+         (log-file log-file)
+         (environment `(("TZ" . ,time-zone)
+                        ("DB_HOSTNAME" . ,db-host)
+                        ("DB_PORT" . ,(number->string db-port))
+                        ("DB_DATABASE_NAME" . ,db-name)
+                        ("DB_USERNAME" . ,db-user)
+                        ("DB_PASSWORD" . ,(maybe-value db-password))
+                        ,@environment))
+         (volumes
+          `((,(string-append data-directory) . "/data")
+            ("/etc/localtime" . "/etc/localtime:ro")))))))))
+
+(define immich-service-type
+  (service-type
+    (name 'immich)
+    (extensions
+     (list (service-extension account-service-type
+                              (const %immich-accounts))
+           (service-extension postgresql-role-service-type
+                              immich-postgresql-role)
+           (service-extension log-rotation-service-type
+                              (compose list immich-configuration-log-file))
+           (service-extension activation-service-type
+                              immich-activation)
+           (service-extension oci-service-type
+                              immich-oci-service)))
+    (description "运行 Immich 服务。")))
