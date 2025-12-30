@@ -28,7 +28,9 @@
             hedgedoc-configuration
             hedgedoc-service-type
             authentik-configuration
-            authentik-service-type))
+            authentik-service-type
+            immich-service-type
+            immich-configuration))
 
 (define %kavita-accounts
   (list (user-account
