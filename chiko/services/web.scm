@@ -782,6 +782,9 @@
   (db-host
    (string "172.17.0.1")
    "PostgreSQL 数据库主机地址")
+  (redis-host
+   (string "172.17.0.1")
+   "Redis主机地址")
   (db-port
    (number 5432)
    "PostgreSQL 数据库端口")
@@ -836,7 +839,7 @@
 
 (define immich-oci-service
   (match-record-lambda <immich-configuration>
-      (image port db-host db-port db-name db-user db-password
+      (image port db-host db-port db-name db-user db-password redis-host
        data-directory time-zone log-file environment auto-start? restart?)
     (oci-extension
      (containers
@@ -858,7 +861,8 @@
                         ("DB_PORT" . ,(number->string db-port))
                         ("DB_DATABASE_NAME" . ,db-name)
                         ("DB_USERNAME" . ,db-user)
-                        ("DB_PASSWORD" . ,(maybe-value db-password))
+                        ("DB_PASSWORD" . ,db-password)
+                        ("REDIS_HOSTNAME" . ,redis-host)
                         ,@environment))
          (volumes
           `((,(string-append data-directory) . "/data")
