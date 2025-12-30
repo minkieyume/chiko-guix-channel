@@ -843,7 +843,7 @@
       (list
        ;; Server 容器
        (oci-container-configuration
-         (image (string-append image ":" tag))
+         (image image)
          (network "bridge")
          (user "immich")
          (group "docker")
