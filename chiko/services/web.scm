@@ -774,7 +774,7 @@
 
 (define-configuration/no-serialization immich-configuration
   (image
-   (string "ghcr.io/immich-app/immich-server")
+   (string "ghcr.io/imagegenius/immich:latest")
    "Immich Docker 镜像")
   (port
    (number 2283)
