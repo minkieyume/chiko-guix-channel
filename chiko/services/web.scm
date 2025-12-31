@@ -998,5 +998,4 @@
                               photoprism-activation)
            (service-extension oci-service-type
                               photoprism-oci-service)))
-    (default-value (photoprism-configuration))
     (description "运行 Matrix Dimension 服务（基于 Docker 容器）")))
