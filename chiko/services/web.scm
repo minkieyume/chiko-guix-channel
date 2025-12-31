@@ -30,7 +30,9 @@
             authentik-configuration
             authentik-service-type
             immich-service-type
-            immich-configuration))
+            immich-configuration
+            photoprism-configuration
+            photoprism-service-type))
 
 (define %kavita-accounts
   (list (user-account
@@ -883,3 +885,116 @@
            (service-extension oci-service-type
                               immich-oci-service)))
     (description "运行 Immich 服务。")))
+
+(define-configuration/no-serialization photoprism-configuration
+  (image
+    (string "photoprism/photoprism:latest")
+    "PhotoPrism 容器镜像")
+  (uid
+   (number 5039)
+   "")
+  (gid
+   (number 5039)
+   "")
+  (config-file
+   maybe-file-like
+   "PhotoPrism配置文件，如未指定则需手动生成")
+  (password
+   (string "admin")
+   "PhotoPrism Admin Password")
+  (port
+   (number 2342)
+   "服务器监听端口")
+  (log-file
+   (string "/var/log/photoprism.log")
+   "日志文件路径")
+  (data-directory
+   (string "/var/lib/photoprism")
+   "数据存储目录")
+  (picture-directory
+   string
+   "图片存储目录")
+  (environment
+   (alist '())
+   "环境变量")
+  (postgresql-password-file
+   string
+   "PostgreSQL 密码文件路径，用于数据库连接")
+  (auto-start?
+   (boolean #t)
+   "是否自动启动服务"))
+
+(define photoprism-postgresql-role
+  (match-record-lambda <photoprism-configuration>
+      (postgresql-password-file)
+    (list (postgresql-role
+            (name "photoprism")
+            (create-database? #t)
+            (password-file postgresql-password-file)))))
+
+(define photoprism-accounts
+  (match-record-lambda <photoprism-configuration>
+      (uid gid)
+    (list (user-group
+            (name "photoprism")
+            (system? #t))
+          (user-account
+            (name "photoprism")
+            (group "photoprism")
+            (system? #t)
+            (comment "PhotoPrism User")
+            (home-directory "/var/lib/photoprism")
+            (shell (file-append shadow "/sbin/nologin"))))))
+
+(define photoprism-activation
+  (match-record-lambda <photoprism-configuration>
+      (data-directory config-file uid gid)
+    #~(begin
+        (use-modules (guix build utils))
+        (unless (file-exists? #$data-directory)
+          (mkdir-p #$data-directory)
+          (chown #$data-directory uid gid))
+        (when #$(maybe-value-set? config-file)
+          (let ((dst (string-append #$data-directory "/config.yaml")))
+            (unless (file-exists? dst)
+              (install-file #$config-file dst)
+              (chown dst uid gid)))))))
+
+(define photoprism-oci-service
+  (match-record-lambda <photoprism-configuration>
+      (image data-directory auto-start? port log-file environment password picture-directory)
+    (oci-extension
+     (containers
+      (list
+       (oci-container-configuration
+         (image image)
+         (network "bridge")
+         (user "photoprism")
+         (group "docker")
+         (auto-start? auto-start?)
+         (provision "photoprism")
+         (requirement '(networking))
+         (log-file log-file)
+	 (ports `((,(number->string port) . "2342")))
+         (environment `(("TZ" . ,time-zone)
+                        ("PHOTOPRISM_UPLOAD_NSFW" . "true")
+                        ("PHOTOPRISM_ADMIN_PASSWORD" . ,password)
+                        ,@environment))
+         (volumes
+          `((,data-directory . "/photoprism/storage")
+            (,picture-directory . "/photoprism/originals")))))))))
+
+(define photoprism-service-type
+  (service-type
+    (name 'photoprism)
+    (extensions
+     (list (service-extension account-service-type
+                              photoprism-accounts)
+           (service-extension postgresql-role-service-type
+                              photoprism-postgresql-role)
+           (service-extension activation-service-type
+                              photoprism-activation)
+           (service-extension oci-service-type
+                              photoprism-oci-service)))
+    (default-value (photoprism-configuration))
+    (description "运行 Matrix Dimension 服务（基于 Docker 容器）")))
