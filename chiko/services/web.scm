@@ -34,6 +34,8 @@
             photoprism-configuration
             photoprism-service-type))
 
+(define-maybe file-like)
+
 (define %kavita-accounts
   (list (user-account
           (name "kavita")
