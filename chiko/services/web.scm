@@ -919,20 +919,20 @@
   (environment
    (alist '())
    "环境变量")
-  (postgresql-password-file
-   string
-   "PostgreSQL 密码文件路径，用于数据库连接")
+  ;; (postgresql-password-file
+  ;;  string
+  ;;  "PostgreSQL 密码文件路径，用于数据库连接")
   (auto-start?
    (boolean #t)
    "是否自动启动服务"))
 
-(define photoprism-postgresql-role
-  (match-record-lambda <photoprism-configuration>
-      (postgresql-password-file)
-    (list (postgresql-role
-            (name "photoprism")
-            (create-database? #t)
-            (password-file postgresql-password-file)))))
+;; (define photoprism-postgresql-role
+;;   (match-record-lambda <photoprism-configuration>
+;;       (postgresql-password-file)
+;;     (list (postgresql-role
+;;             (name "photoprism")
+;;             (create-database? #t)
+;;             (password-file postgresql-password-file)))))
 
 (define photoprism-accounts
   (match-record-lambda <photoprism-configuration>
@@ -992,10 +992,10 @@
     (extensions
      (list (service-extension account-service-type
                               photoprism-accounts)
-           (service-extension postgresql-role-service-type
-                              photoprism-postgresql-role)
+           ;; (service-extension postgresql-role-service-type
+           ;;                    photoprism-postgresql-role)
            (service-extension activation-service-type
                               photoprism-activation)
            (service-extension oci-service-type
                               photoprism-oci-service)))
-    (description "运行 Matrix Dimension 服务（基于 Docker 容器）")))
+    (description "PhotoPrism 照片管理程序。")))
