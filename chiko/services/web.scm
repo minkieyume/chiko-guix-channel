@@ -919,6 +919,9 @@
   (environment
    (alist '())
    "环境变量")
+  (time-zone
+   (string "Asia/Shanghai")
+   "时区")
   ;; (postgresql-password-file
   ;;  string
   ;;  "PostgreSQL 密码文件路径，用于数据库连接")
@@ -964,7 +967,7 @@
 
 (define photoprism-oci-service
   (match-record-lambda <photoprism-configuration>
-      (image data-directory auto-start? port log-file environment password picture-directory)
+      (image data-directory auto-start? port log-file environment password picture-directory time-zone)
     (oci-extension
      (containers
       (list
