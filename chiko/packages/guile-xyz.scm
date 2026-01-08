@@ -1,4 +1,4 @@
-(define-module (gnu packages guile-xyz)
+(define-module (chiko packages guile-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
