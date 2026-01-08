@@ -12,7 +12,7 @@
   #:use-module (ice-9 match))
 
 (define-public guile-orgfile
-  (let ((commit "19c77b842998fb46758c8af7ef72caeb32a2eba3")
+  (let ((commit "73c765b4fe1451b2414b549fc2dc3352d5fe5bf6")
         (revision "0"))
     (package
       (name "guile-orgfile")
@@ -25,7 +25,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0izkw8zgw1bkcqcb8dm480vhnbcbs6vvc6dhisncg088rw1ksjgn"))))
+                  "0qg3zn06jk03y1gqckq3nrqwd82wg3fny0961rhfqiswhda6p096"))))
       (build-system guile-build-system)
       (arguments
        (list #:source-directory "orgfile"))
