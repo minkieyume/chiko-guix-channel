@@ -160,149 +160,225 @@ fit together as required by any particular game.")
 (define-public cl-convert-covering
   (sbcl-package->cl-source-package sbcl-convex-covering))
 
-;; (define-public sbcl-imagine
-;;   (let ((commit "e11ec0aa5710256767dc75eb3820293d3fbb4e0d")
-;;         (revision "0"))
-;;     (package
-;;       (name "sbcl-imagine")
-;;       (version (git-version "1.2.0" revision commit))
-;;       (source
-;;        (origin
-;;          (method git-fetch)
-;;          (uri (git-reference
-;;                (url "https://codeberg.org/shirakumo/imagine")
-;;                (commit commit)))
-;;          (file-name (git-file-name "imagine" version))
-;;          (sha256
-;;           (base32 "1h6w5nz9kxhyrr4mvcrflrnbjg7xs3rjik52p17wbc8fq0686fhg"))))
-;;       (build-system asdf-build-system/sbcl)
-;;       (arguments
-;;        `(#:tests? #f
-;;          #:asd-systems '("imagine")))
-;;       (inputs
-;;        (list sbcl-closer-mop
-;;              sbcl-nibbles
-;;              sbcl-documentation-utils))
-;;       (home-page "https://shirakumo.org/docs/imagine")
-;;       (synopsis "Common Lisp game engine")
-;;       (description
-;;        "Trial is a game engine written in Common Lisp.  Unlike many other
-;; engines, it is meant to be more of a loose connection of components that can be
-;; fit together as required by any particular game.")
-;;       (license license:zlib))))
+(define-public sbcl-memory-regions
+  (let ((commit "9bdbc67f388b37aa111fcc3fa0cbea6f55372be4")
+        (revision "0"))
+    (package
+      (name "sbcl-convex-covering")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/memory-regions")
+                (commit commit)))
+         (file-name (git-file-name "cl-memory-regions" version))
+         (sha256
+          (base32 "16l4jxypxva1pg5gcncpk7v7zp3nrb64qw7zf2vpfyhl9jjvm0m9"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f
+         #:asd-systems '("memory-regions/region"
+                         "memory-regions/allocator"
+                         "memory-regions/sequence"
+                         "memory-regions/stream"
+                         "memory-regions/object"
+                         "memory-regions/pathname"
+                         "memory-regions/static-vector")))
+      (native-inputs
+       (list sbcl-trivial-features))
+      (inputs
+       (list sbcl-trivial-extensible-sequences
+             sbcl-cffi
+             sbcl-trivial-gray-streams
+             sbcl-closer-mop
+             sbcl-static-vectors
+             sbcl-mmap
+             sbcl-documentation-utils))
+      (home-page "https://shirakumo.org/docs/memory-regions")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
 
-;; (define-public sbcl-trial-chiko
-;;   (let ((commit "966051b503223024daeb76982028ff275b69c560")
-;;         (revision "2"))
-;;     (package
-;;       (name "sbcl-trial-chiko")
-;;       (version (git-version "1.2.0" revision commit))
-;;       (source
-;;        (origin
-;;          (method git-fetch)
-;;          (uri (git-reference
-;;                 (url "https://codeberg.org/shirakumo/trial")
-;;                 (commit commit)))
-;;          (file-name (git-file-name "cl-trial" version))
-;;          (sha256
-;;           (base32 "0ypx0a2dvav6swpsilprag4bp7742x57j39ra3gghq04ch442c65"))))
-;;       (build-system asdf-build-system/sbcl)
-;;       (arguments
-;;        `(#:asd-systems '("trial"
-;;                          "trial-alloy"
-;;                          "trial-animation"
-;;                          "trial-assimp"
-;;                          ;; TODO: It requires a long packaging journey.
-;;                          ;; "trial-feedback"
-;;                          "trial-gif"
-;;                          "trial-glfw"
-;;                          ;; FIXME: Check why this system is failing:
-;;                          ;; WARNING: Invalid qualifiers for APPEND method
-;;                          ;; combination in method
-;;                          ;; ...
-;;                          ;; "trial-glop"
-;;                          "trial-gltf"
-;;                          "trial-harmony"
-;;                          "trial-jpeg"
-;;                          "trial-notify"
-;;                          "trial-png"
-;;                          ;; TODO: I'm not sure which QOI system to use here. There are two:
-;;                          ;; - https://github.com/bpanthi977/qoi
-;;                          ;; - https://github.com/mfiano/qoi
-;;                          ;; "trial-qoi"
-;;                          ;; TODO: It requires a long packaging journey.
-;;                          ;; "trial-qt"
-;;                          "trial-sdl2"
-;;                          "trial-terragen"
-;;                          "trial-tga"
-;;                          "trial-tiff"
-;;                          "trial-workbench")))
-;;       (native-inputs
-;;        (list sbcl-trivial-features))
-;;       (inputs
-;;        (list sbcl-3d-matrices
-;;              sbcl-3d-quaternions
-;;              sbcl-3d-transforms
-;;              sbcl-3d-vectors
-;;              sbcl-3d-math
-;;              sbcl-3d-spaces
-;;              sbcl-convex-covering
-;;              sbcl-depot
-;;              sbcl-filesystem-utils
-;;              sbcl-alexandria
-;;              sbcl-alloy
-;;              sbcl-atomics
-;;              sbcl-bordeaux-threads
-;;              sbcl-cl-gamepad
-;;              sbcl-cl-glfw3
-;;              sbcl-cl-gltf
-;;              sbcl-cl-jpeg
-;;              sbcl-cl-opengl
-;;              sbcl-cl-ppcre
-;;              sbcl-cl-tga
-;;              sbcl-classimp
-;;              sbcl-closer-mop
-;;              sbcl-deploy
-;;              sbcl-dns-client
-;;              sbcl-fast-io
-;;              sbcl-file-notify
-;;              sbcl-flare
-;;              sbcl-float-features
-;;              sbcl-flow
-;;              sbcl-for
-;;              sbcl-form-fiddle
-;;              sbcl-glop
-;;              sbcl-glsl-toolkit
-;;              sbcl-harmony
-;;              sbcl-ieee-floats
-;;              sbcl-jzon
-;;              sbcl-lambda-fiddle
-;;              sbcl-language-codes
-;;              sbcl-lquery
-;;              sbcl-messagebox
-;;              sbcl-mmap
-;;              sbcl-pathname-utils
-;;              sbcl-pngload
-;;              sbcl-promise
-;;              sbcl-retrospectiff
-;;              sbcl-sdl2
-;;              sbcl-simple-tasks
-;;              sbcl-static-vectors
-;;              sbcl-system-locale
-;;              sbcl-terrable
-;;              sbcl-trivial-extensible-sequences
-;;              sbcl-trivial-garbage
-;;              sbcl-trivial-indent
-;;              sbcl-trivial-main-thread
-;;              sbcl-verbose
-;;              sbcl-zpng))
-;;       (home-page "https://shirakumo.org/docs/trial")
-;;       (synopsis "Common Lisp game engine")
-;;       (description
-;;        "Trial is a game engine written in Common Lisp.  Unlike many other
-;; engines, it is meant to be more of a loose connection of components that can be
-;; fit together as required by any particular game.")
-;;       (license license:zlib))))
+(define-public sbcl-imagine
+  (let ((commit "e11ec0aa5710256767dc75eb3820293d3fbb4e0d")
+        (revision "0"))
+    (package
+      (name "sbcl-imagine")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shirakumo/imagine")
+                (commit commit)))
+         (file-name (git-file-name "imagine" version))
+         (sha256
+          (base32 "1r2vr00vzvvv6fvh953bhfb4s16gmd5glmy9h7c3n0pl2hpgwrw9"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f
+         #:asd-systems '("imagine"
+                         "imagine/foreign-pointer"
+                         "imagine/memory-region"
+                         "imagine/raw"
+                         "imagine/depot"
+                         ;; "imagine/bmp"
+                         ;; "imagine/devil"
+                         ;; "imagine/gif"
+                         ;; "imagine/hdr"
+                         ;; "imagine/jpeg"
+                         ;; "imagine/jpeg-turbo"
+                         ;; "imagine/ktx"
+                         ;; "imagine/png"
+                         ;; "imagine/qoi"
+                         ;; "imagine/sf3"
+                         ;; "imagine/svg"
+                         ;; "imagine/terragen"
+                         ;; "imagine/tga"
+                         ;; "imagine/tiff"
+                         ;; "imagine/formats"
+                         ;; "imagine/test"
+                         )))
+      (inputs
+       (list sbcl-closer-mop
+             sbcl-nibbles
+             sbcl-documentation-utils
+             sbcl-cffi
+             sbcl-depot
+             sbcl-cl-jpeg
+             sbcl-pngload
+             sbcl-zpng
+             sbcl-retrospectiff
+             sbcl-memory-regions
+             ;; sbcl-cl-bmp
+             ;; sbcl-skippy-renderer
+             ;; sbcl-3b-hdr
+             ))
+      (home-page "https://shirakumo.org/docs/imagine")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-trial-chiko
+  (let ((commit "966051b503223024daeb76982028ff275b69c560")
+        (revision "2"))
+    (package
+      (name "sbcl-trial-chiko")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shirakumo/trial")
+                (commit commit)))
+         (file-name (git-file-name "cl-trial" version))
+         (sha256
+          (base32 "0ypx0a2dvav6swpsilprag4bp7742x57j39ra3gghq04ch442c65"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("trial"
+                         "trial-alloy"
+                         "trial-animation"
+                         "trial-assimp"
+                         ;; TODO: It requires a long packaging journey.
+                         ;; "trial-feedback"
+                         "trial-gif"
+                         "trial-glfw"
+                         ;; FIXME: Check why this system is failing:
+                         ;; WARNING: Invalid qualifiers for APPEND method
+                         ;; combination in method
+                         ;; ...
+                         ;; "trial-glop"
+                         "trial-gltf"
+                         "trial-harmony"
+                         "trial-jpeg"
+                         "trial-notify"
+                         "trial-png"
+                         ;; TODO: I'm not sure which QOI system to use here. There are two:
+                         ;; - https://github.com/bpanthi977/qoi
+                         ;; - https://github.com/mfiano/qoi
+                         ;; "trial-qoi"
+                         ;; TODO: It requires a long packaging journey.
+                         ;; "trial-qt"
+                         "trial-sdl2"
+                         "trial-terragen"
+                         "trial-tga"
+                         "trial-tiff"
+                         "trial-workbench")))
+      (native-inputs
+       (list sbcl-trivial-features))
+      (inputs
+       (list sbcl-3d-matrices
+             sbcl-3d-quaternions
+             sbcl-3d-transforms
+             sbcl-3d-vectors
+             sbcl-3d-math
+             sbcl-3d-spaces
+             sbcl-convex-covering
+             sbcl-memory-regions
+             sbcl-depot
+             sbcl-filesystem-utils
+             sbcl-alexandria
+             sbcl-alloy
+             sbcl-atomics
+             sbcl-bordeaux-threads
+             sbcl-cl-gamepad
+             sbcl-cl-glfw3
+             sbcl-cl-gltf
+             sbcl-cl-jpeg
+             sbcl-cl-opengl
+             sbcl-cl-ppcre
+             sbcl-cl-tga
+             sbcl-classimp
+             sbcl-closer-mop
+             sbcl-deploy
+             sbcl-dns-client
+             sbcl-fast-io
+             sbcl-file-notify
+             sbcl-flare
+             sbcl-float-features
+             sbcl-flow
+             sbcl-for
+             sbcl-form-fiddle
+             sbcl-glop
+             sbcl-glsl-toolkit
+             sbcl-harmony
+             sbcl-ieee-floats
+             sbcl-jzon
+             sbcl-lambda-fiddle
+             sbcl-language-codes
+             sbcl-lquery
+             sbcl-messagebox
+             sbcl-mmap
+             sbcl-pathname-utils
+             sbcl-pngload
+             sbcl-promise
+             sbcl-retrospectiff
+             sbcl-sdl2
+             sbcl-simple-tasks
+             sbcl-static-vectors
+             sbcl-system-locale
+             sbcl-terrable
+             sbcl-trivial-extensible-sequences
+             sbcl-trivial-garbage
+             sbcl-trivial-indent
+             sbcl-trivial-main-thread
+             sbcl-verbose
+             sbcl-zpng))
+      (home-page "https://shirakumo.org/docs/trial")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
 
 ;; (define-public cl-trial-chiko
 ;;   (sbcl-package->cl-source-package sbcl-trial-chiko))
@@ -310,6 +386,8 @@ fit together as required by any particular game.")
 (list sbcl-cl-wavefront
       sbcl-manifolds
       sbcl-quickhull
-      sbcl-convex-covering
+      sbcl-convex-covering      
+      sbcl-memory-regions
+      sbcl-imagine
       ;; sbcl-trial-chiko
       )
