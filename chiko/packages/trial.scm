@@ -1,4 +1,4 @@
-(define-module (chiko packages lisp-xyz)
+(define-module (chiko packages trial)
   #:use-module (gnu packages)
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
@@ -134,8 +134,6 @@ fit together as required by any particular game.")
          #:asd-systems '("convex-covering"
                          "convex-covering/test"
                          "convex-covering/visualization")))
-      (native-inputs
-       (list sbcl-trivial-features))
       (inputs
        (list sbcl-3d-spaces
              sbcl-manifolds
@@ -164,7 +162,7 @@ fit together as required by any particular game.")
   (let ((commit "9bdbc67f388b37aa111fcc3fa0cbea6f55372be4")
         (revision "0"))
     (package
-      (name "sbcl-convex-covering")
+      (name "sbcl-memory-regions")
       (version (git-version "1.2.0" revision commit))
       (source
        (origin
@@ -185,8 +183,6 @@ fit together as required by any particular game.")
                          "memory-regions/object"
                          "memory-regions/pathname"
                          "memory-regions/static-vector")))
-      (native-inputs
-       (list sbcl-trivial-features))
       (inputs
        (list sbcl-trivial-extensible-sequences
              sbcl-cffi
@@ -203,6 +199,17 @@ engines, it is meant to be more of a loose connection of components that can be
 fit together as required by any particular game.")
       (license license:zlib))))
 
+;; TODO 根据以下包和对应仓库的路径，按照本文件的格式自动生成对应的包定义，不要加多余的东西：
+;; cl-bmp  https://codeberg.org/shinmera/cl-bmp
+;; cl-devil https://github.com/zkat/cl-devil
+;; skippy-renderer https://github.com/phoe/skippy-renderer
+;; 3b-hdr https://github.com/3b/3b-hdr/
+;; cl-jpeg https://github.com/sharplispers/cl-jpeg
+;; cl-turbojpeg https://codeberg.org/shirakumo/cl-turbojpeg
+;; cl-ktx https://codeberg.org/shinmera/cl-ktx
+;; cl-ktx2 https://codeberg.org/shinmera/cl-ktx2
+;; cl-sf3 https://codeberg.org/shirakumo/cl-sf3
+
 (define-public sbcl-imagine
   (let ((commit "e11ec0aa5710256767dc75eb3820293d3fbb4e0d")
         (revision "0"))
@@ -215,13 +222,13 @@ fit together as required by any particular game.")
          (uri (git-reference
                 (url "https://codeberg.org/shirakumo/imagine")
                 (commit commit)))
-         (file-name (git-file-name "imagine" version))
+         (file-name (git-file-name "cl-imagine" version))
          (sha256
           (base32 "1r2vr00vzvvv6fvh953bhfb4s16gmd5glmy9h7c3n0pl2hpgwrw9"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:tests? #f
-         #:asd-systems '("imagine"
+         #:asd-systems '("imagine"                         
                          "imagine/foreign-pointer"
                          "imagine/memory-region"
                          "imagine/raw"
@@ -237,7 +244,7 @@ fit together as required by any particular game.")
                          ;; "imagine/qoi"
                          ;; "imagine/sf3"
                          ;; "imagine/svg"
-                         ;; "imagine/terragen"
+                         "imagine/terragen"
                          ;; "imagine/tga"
                          ;; "imagine/tiff"
                          ;; "imagine/formats"
@@ -254,11 +261,163 @@ fit together as required by any particular game.")
              sbcl-zpng
              sbcl-retrospectiff
              sbcl-memory-regions
+             sbcl-terrable
              ;; sbcl-cl-bmp
              ;; sbcl-skippy-renderer
              ;; sbcl-3b-hdr
              ))
       (home-page "https://shirakumo.org/docs/imagine")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-lru-cache
+  (let ((commit "53d0f846103ad7df690fc01ccd8d5a0a26220079")
+        (revision "0"))
+    (package
+      (name "sbcl-lru-cache")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/lru-cache")
+                (commit commit)))
+         (file-name (git-file-name "cl-lru-cache" version))
+         (sha256
+          (base32 "10nclq68k17kx6fr7vmwxci5i9bqsh32jiflfmzd9yzzc6rqvaxv"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f
+         #:asd-systems '("lru-cache")))
+      (inputs
+       (list sbcl-documentation-utils))
+      (home-page "https://codeberg.org/shinmera/lru-cache")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-precise-time
+  (let ((commit "93ea6aea74aa2ea8860e8581e67997636320e841")
+        (revision "0"))
+    (package
+      (name "sbcl-precise-time")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/precise-time")
+                (commit commit)))
+         (file-name (git-file-name "cl-precise-time" version))
+         (sha256
+          (base32 "0gj98hvmzvay27rbdjnz65izcs0dr0rq1g11aac04c0w12xp1rq5"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("precise-time" "precise-time/test")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-cffi
+             sbcl-parachute))
+      (home-page "https://codeberg.org/shinmera/precise-time")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-random-state-chiko
+  (let ((commit "cef6ce2c99b5f132b912d396eac25daebe8abb83")
+        (revision "0"))
+    (package
+      (name "sbcl-random-state-chiko")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/random-state")
+                (commit commit)))
+         (file-name (git-file-name "cl-random-state" version))
+         (sha256
+          (base32 "0pml2l7q4j6hq9ikr7dhxdswn8dpyvnnxbdf6h1j0xalj33ga55b"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f #:asd-systems '("random-state" "random-state/test" "random-state/viewer")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-zpng
+             sbcl-trivial-features
+             sbcl-parachute))
+      (home-page "https://codeberg.org/shinmera/random-state")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-random-sampling
+  (let ((commit "c8bbcb069566fae7a2cae00e7b63a1d0f4f38045")
+        (revision "0"))
+    (package
+      (name "sbcl-random-sampling")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/random-sampling")
+                (commit commit)))
+         (file-name (git-file-name "cl-random-sampling" version))
+         (sha256
+          (base32 "0xc1a4fsb87a686ll16qgjrw6qyijzjv9v6j5ikap2skz6yq0xhf"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("random-sampling" "random-sampling/test")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-random-state-chiko
+             sbcl-3d-math
+             sbcl-parachute))
+      (home-page "https://codeberg.org/shinmera/random-sampling")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-random-noise
+  (let ((commit "a069aa97c1a8ac2d33893666ddc9479b2ba2f045")
+        (revision "0"))
+    (package
+      (name "")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/random-noise")
+                (commit commit)))
+         (file-name (git-file-name "cl-random-noise" version))
+         (sha256
+          (base32 "0yjkvyhmk2qbgcm8kzmbfbgwc8rznf1rl70pvk71ip6k3kj3zl1c"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("random-noise" "random-noise/test")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-zpng
+             sbcl-parachute))
+      (home-page "https://codeberg.org/shinmera/random-noise")
       (synopsis "Common Lisp game engine")
       (description
        "Trial is a game engine written in Common Lisp.  Unlike many other
@@ -283,93 +442,56 @@ fit together as required by any particular game.")
           (base32 "0ypx0a2dvav6swpsilprag4bp7742x57j39ra3gghq04ch442c65"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:asd-systems '("trial"
-                         "trial-alloy"
-                         "trial-animation"
-                         "trial-assimp"
-                         ;; TODO: It requires a long packaging journey.
-                         ;; "trial-feedback"
-                         "trial-gif"
-                         "trial-glfw"
-                         ;; FIXME: Check why this system is failing:
-                         ;; WARNING: Invalid qualifiers for APPEND method
-                         ;; combination in method
-                         ;; ...
-                         ;; "trial-glop"
-                         "trial-gltf"
-                         "trial-harmony"
-                         "trial-jpeg"
-                         "trial-notify"
-                         "trial-png"
-                         ;; TODO: I'm not sure which QOI system to use here. There are two:
-                         ;; - https://github.com/bpanthi977/qoi
-                         ;; - https://github.com/mfiano/qoi
-                         ;; "trial-qoi"
-                         ;; TODO: It requires a long packaging journey.
-                         ;; "trial-qt"
-                         "trial-sdl2"
-                         "trial-terragen"
-                         "trial-tga"
-                         "trial-tiff"
-                         "trial-workbench")))
+       `(#:asd-systems '("trial")))
       (native-inputs
        (list sbcl-trivial-features))
       (inputs
-       (list sbcl-3d-matrices
-             sbcl-3d-quaternions
-             sbcl-3d-transforms
-             sbcl-3d-vectors
-             sbcl-3d-math
+       (list sbcl-3d-math
              sbcl-3d-spaces
-             sbcl-convex-covering
-             sbcl-memory-regions
-             sbcl-depot
-             sbcl-filesystem-utils
              sbcl-alexandria
-             sbcl-alloy
              sbcl-atomics
              sbcl-bordeaux-threads
              sbcl-cl-gamepad
-             sbcl-cl-glfw3
-             sbcl-cl-gltf
-             sbcl-cl-jpeg
              sbcl-cl-opengl
              sbcl-cl-ppcre
-             sbcl-cl-tga
-             sbcl-classimp
              sbcl-closer-mop
+             sbcl-jzon
+             sbcl-convex-covering
              sbcl-deploy
-             sbcl-dns-client
-             sbcl-fast-io
-             sbcl-file-notify
-             sbcl-flare
+             sbcl-depot
+             sbcl-documentation-utils
+             sbcl-filesystem-utils
              sbcl-float-features
-             sbcl-flow
              sbcl-for
              sbcl-form-fiddle
-             sbcl-glop
              sbcl-glsl-toolkit
-             sbcl-harmony
              sbcl-ieee-floats
-             sbcl-jzon
+             sbcl-imagine
              sbcl-lambda-fiddle
              sbcl-language-codes
              sbcl-lquery
+             sbcl-lru-cache
+             sbcl-machine-state
+             sbcl-manifolds
+             sbcl-memory-regions
              sbcl-messagebox
-             sbcl-mmap
+             sbcl-nibbles
+             sbcl-open-with
              sbcl-pathname-utils
-             sbcl-pngload
+             sbcl-precise-time
              sbcl-promise
-             sbcl-retrospectiff
-             sbcl-sdl2
-             sbcl-simple-tasks
-             sbcl-static-vectors
-             sbcl-system-locale
-             sbcl-terrable
+             sbcl-quickhull
+             sbcl-random-sampling
+             sbcl-random-state-chiko
+             sbcl-random-noise
+             ;; sha3
+             ;; simple-tasks
+             ;; system-locale
+             ;; text-draw
+             ;; trivial-deprecate
              sbcl-trivial-extensible-sequences
              sbcl-trivial-garbage
              sbcl-trivial-indent
-             sbcl-trivial-main-thread
              sbcl-verbose
              sbcl-zpng))
       (home-page "https://shirakumo.org/docs/trial")
@@ -389,5 +511,10 @@ fit together as required by any particular game.")
       sbcl-convex-covering      
       sbcl-memory-regions
       sbcl-imagine
+      sbcl-lru-cache
+      sbcl-precise-time
+      sbcl-random-state-chiko
+      sbcl-random-sampling
+      sbcl-random-noise
       ;; sbcl-trial-chiko
       )

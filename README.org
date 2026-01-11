@@ -16,5 +16,30 @@
     "F655 AB8D 8F94 0E9F 569C E97D 5DBC D441 1818 2F31"))))
 #+end_src
 
+* Project List
+** Packages
+- Ollama (Nvidia bin)
+- Trial (WIP)
+** Emacs Packages
+- dirvish
+- ekg
+- copilot.el
+- copilot-chat
+- vecdb
+- ellama
+- elisa
+- aider.el
+** Services
+- Kavita (oci)
+- Calibre Web (oci)
+- Etherpad (oci)
+- Hedgedoc (oci)
+- Authentik (oci)
+- Photoprism (oci)
+- Synapse (oci)
+- Docker Mailserver (oci)
+- Autofs
+- Doas
+- Qdrant (oci)
 * Source of part code
 ollama in ai.scm from [[https://codeberg.org/tusharhero/ollama-guix][ollama-guix]]
