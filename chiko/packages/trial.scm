@@ -13,9 +13,51 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lisp-check)
+  #:use-module (gnu packages bash)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
+
+(define sbcl-8g-wrapper
+  (computed-file "sbcl-8g-wrapper"
+    ;; 1. 使用 with-imported-modules 显式导入模块
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          ;; 2. 这才是在构建环境中真正加载它
+          (use-modules (guix build utils))
+          (let ((bin (string-append #$output "/bin")))
+            (mkdir-p bin)
+            (with-output-to-file (string-append bin "/sbcl")
+              (lambda ()
+                (format #t "#!~a
+exec ~a --dynamic-space-size 8192 \"$@\"~%"
+                        #$(file-append bash-minimal "/bin/sh")
+                        #$(file-append sbcl "/bin/sbcl"))))
+            (chmod (string-append bin "/sbcl") #o755))))))
+
+(define-macro (define-sbcl cl-name link cl-commit hash inputs arguments)
+  `(define-public ,(string->symbol (string-append "sbcl-" cl-name "-chiko"))
+     (package
+       (name ,(string-append "sbcl-" cl-name "-chiko"))
+       (version (git-version "1.4.0" "0" ,cl-commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url ,link)
+                 (commit ,cl-commit)))
+          (file-name (git-file-name ,(string-append "cl-" cl-name) version))
+          (sha256
+           (base32 ,hash))))
+       (build-system asdf-build-system/sbcl)
+       (arguments ,arguments)
+       (inputs
+        (list ,@inputs))
+       (home-page ,link)
+       (synopsis "Auto Spawned Common Lisp Library")
+       (description
+        "This Library has auto spawned by a macro")
+       (license license:zlib))))
 
 (define-public sbcl-cl-wavefront
   (let ((commit "421c3400b26a1ab44945785e6c931f3b06248d0e")
@@ -27,8 +69,8 @@
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://codeberg.org/shirakumo/cl-wavefront")
-               (commit commit)))
+                (url "https://codeberg.org/shirakumo/cl-wavefront")
+                (commit commit)))
          (file-name (git-file-name "cl-wavefront" version))
          (sha256
           (base32 "1h6w5nz9kxhyrr4mvcrflrnbjg7xs3rjik52p17wbc8fq0686fhg"))))
@@ -67,7 +109,7 @@ fit together as required by any particular game.")
       (arguments
        `(#:asd-systems '("manifolds")))
       (inputs
-       (list sbcl-3d-math
+       (list sbcl-3d-math-chiko
              sbcl-3d-spaces
              sbcl-documentation-utils
              sbcl-cl-wavefront))
@@ -100,7 +142,7 @@ fit together as required by any particular game.")
       ;; (native-inputs
       ;;  (list sbcl-trivial-features))
       (inputs
-       (list sbcl-3d-math
+       (list sbcl-3d-math-chiko
              sbcl-documentation-utils))
       (home-page "https://shirakumo.org/docs/quickhull")
       (synopsis "Common Lisp game engine")
@@ -385,7 +427,7 @@ fit together as required by any particular game.")
       (inputs
        (list sbcl-documentation-utils
              sbcl-random-state-chiko
-             sbcl-3d-math
+             sbcl-3d-math-chiko
              sbcl-parachute))
       (home-page "https://codeberg.org/shinmera/random-sampling")
       (synopsis "Common Lisp game engine")
@@ -425,6 +467,145 @@ engines, it is meant to be more of a loose connection of components that can be
 fit together as required by any particular game.")
       (license license:zlib))))
 
+(define-public sbcl-sha3
+  (let ((commit "a4baa05e72ee05aba545152a2ffe2e46fbfa3d4b")
+        (revision "0"))
+    (package
+      (name "sbcl-sha3")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/pmai/sha3")
+                (commit commit)))
+         (file-name (git-file-name "cl-sha3" version))
+         (sha256
+          (base32 "0jl59js4n1gc08j2bcwf0d1gy82lf7g53b639dwh6b0milbqh7gz"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("sha3")))
+      (home-page "https://github.com/pmai/sha3")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-sbcl "text-draw"
+  "https://codeberg.org/shinmera/text-draw"
+  "4a98cedd7ad1d1e5c230be8f00aeb7d82bf43cf9"
+  "15gnslf8arcknrv668aqf0n2s10lw8gchnvmgnafxv825w6q8vw1"
+  (sbcl-documentation-utils)
+  `(#:asd-systems '("text-draw")))
+
+(define-sbcl "trivial-deprecate"
+  "https://codeberg.org/shinmera/trivial-deprecate"
+  "30a6385281d224760e687dc3fd7b9a0c276825a2"
+  "0xp5wk7r2d9l896bsla2dhcidbgl5h0pvw40gdsjvjy1cbyqpri0"
+  ()
+  `(#:asd-systems '("trivial-deprecate")))
+
+(define-public sbcl-3d-spaces-chiko
+  (let ((commit "48b909d4416dc0a9b442e15a078775e84dc21b9f")
+        (revision "0"))
+    (package
+      (name "sbcl-3d-spaces-chiko")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shirakumo/3d-spaces")
+                (commit commit)))
+         (file-name (git-file-name "cl-3d-spaces" version))
+         (sha256
+          (base32 "0jz1lwnkfs7cjaf2pgfpacx6frysd57cmhykkv7dsmw7mpj4n7q5"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("3d-spaces" "3d-spaces/test")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-text-draw-chiko
+             sbcl-cl-wavefront
+             sbcl-3d-math-chiko
+             sbcl-for
+             sbcl-nibbles
+             sbcl-trivial-extensible-sequences
+             sbcl-babel
+             sbcl-parachute))
+      (home-page "https://codeberg.org/shirakumo/3d-spaces")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-3d-math-chiko
+  (let ((commit "00527bb4d44c89a378eda740ef4a39c01d0b47d2")
+        (revision "0"))
+    (package
+      (name "sbcl-3d-math-chiko")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/3d-math")
+                (commit commit)))
+         (file-name (git-file-name "cl-3d-math" version))
+         (sha256
+          (base32 "0fl8byjl1icljgmqzbb0p1vg5s0i3rvfjn7n5fa10nxg4gn07gmc"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:lisp ,sbcl-8g-wrapper
+         #:asd-systems '("3d-math" "3d-math-test")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-type-templates
+             sbcl-parachute))
+      (home-page "https://codeberg.org/shirakumo/3d-spaces")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
+(define-public sbcl-deploy-chiko
+  (let ((commit "5d57fcce38b6156be951f3fed9fbbdacf4ba2912")
+        (revision "0"))
+    (package
+      (name "sbcl-deploy-chiko")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://codeberg.org/shinmera/deploy")
+                (commit commit)))
+         (file-name (git-file-name "cl-deploy" version))
+         (sha256
+          (base32 "1f2sahr2k4d291hn7x7bcy4nxav4va3rrw2gcw122zsg97siqy8h"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("deploy")))
+      (inputs
+       (list sbcl-documentation-utils
+             sbcl-cffi
+             sbcl-sha3
+             sbcl-pathname-utils
+             sbcl-trivial-features))
+      (home-page "https://codeberg.org/shinmera/deploy")
+      (synopsis "Common Lisp game engine")
+      (description
+       "Trial is a game engine written in Common Lisp.  Unlike many other
+engines, it is meant to be more of a loose connection of components that can be
+fit together as required by any particular game.")
+      (license license:zlib))))
+
 (define-public sbcl-trial-chiko
   (let ((commit "966051b503223024daeb76982028ff275b69c560")
         (revision "2"))
@@ -446,8 +627,8 @@ fit together as required by any particular game.")
       (native-inputs
        (list sbcl-trivial-features))
       (inputs
-       (list sbcl-3d-math
-             sbcl-3d-spaces
+       (list sbcl-3d-math-chiko
+             sbcl-3d-spaces-chiko
              sbcl-alexandria
              sbcl-atomics
              sbcl-bordeaux-threads
@@ -457,11 +638,12 @@ fit together as required by any particular game.")
              sbcl-closer-mop
              sbcl-jzon
              sbcl-convex-covering
-             sbcl-deploy
+             sbcl-deploy-chiko
              sbcl-depot
              sbcl-documentation-utils
              sbcl-filesystem-utils
              sbcl-float-features
+             sbcl-flow
              sbcl-for
              sbcl-form-fiddle
              sbcl-glsl-toolkit
@@ -484,11 +666,11 @@ fit together as required by any particular game.")
              sbcl-random-sampling
              sbcl-random-state-chiko
              sbcl-random-noise
-             ;; sha3
-             ;; simple-tasks
-             ;; system-locale
-             ;; text-draw
-             ;; trivial-deprecate
+             sbcl-sha3
+             sbcl-simple-tasks
+             sbcl-system-locale
+             sbcl-text-draw-chiko
+             sbcl-trivial-deprecate-chiko
              sbcl-trivial-extensible-sequences
              sbcl-trivial-garbage
              sbcl-trivial-indent
@@ -508,7 +690,7 @@ fit together as required by any particular game.")
 (list sbcl-cl-wavefront
       sbcl-manifolds
       sbcl-quickhull
-      sbcl-convex-covering      
+      sbcl-convex-covering
       sbcl-memory-regions
       sbcl-imagine
       sbcl-lru-cache
@@ -516,5 +698,11 @@ fit together as required by any particular game.")
       sbcl-random-state-chiko
       sbcl-random-sampling
       sbcl-random-noise
+      sbcl-sha3
+      sbcl-text-draw-chiko
+      sbcl-trivial-deprecate-chiko
+      sbcl-deploy-chiko
+      sbcl-3d-spaces-chiko
+      sbcl-3d-math-chiko
       ;; sbcl-trial-chiko
       )
