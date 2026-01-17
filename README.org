@@ -1,6 +1,6 @@
 #+Title:Minkie Chiko's Guix Channel | 明琪琪可的Guix频道
 
-* This branch has removed to [[https://codeberg.org/minkieyume/chiko-guix-channel][Codeberg]]
+* This branch has moved to [[https://codeberg.org/minkieyume/chiko-guix-channel][Codeberg]]
 
 * 前言
 琪可琪可~ 欢迎订阅明琪的Guix频道，这个频道的软件包都是明琪自用的Guix配置，根据明琪本人需求进行自定义。
